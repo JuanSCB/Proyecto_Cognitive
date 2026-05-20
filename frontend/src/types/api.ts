@@ -1,0 +1,82 @@
+export interface SensorInput {
+  lux: number;
+  intensidad_led: number;
+  consumo_energetico: number;
+  modo_automatico: boolean;
+  actividad_id?: number;
+}
+
+export interface Sensor {
+  id: number;
+  lux: number;
+  intensidad_led: number;
+  consumo_energetico: number;
+  modo_automatico: boolean;
+  actividad_id?: number;
+  registrado_en: string;
+}
+
+export interface PaginatedSensores {
+  items: Sensor[];
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export interface Actividad {
+  id?: number;
+  nombre: string;
+  descripcion?: string;
+}
+
+export interface Configuracion {
+  id?: number;
+  modo_automatico: boolean;
+  intensidad_led_default: number;
+  umbral_lux: number;
+  max_consumo: number;
+}
+
+export interface Usuario {
+  id?: number;
+  nombre: string;
+  correo: string;
+}
+
+export interface ConsumoEnergetico {
+  id: number;
+  sensor_id: number;
+  total_kwh: number;
+  periodo_inicio: string;
+  periodo_fin: string;
+  creado_en: string;
+}
+
+export interface HealthStatus {
+  status: string;
+  service: string;
+  version: string;
+}
+
+export interface Reporte {
+  total_registros: number;
+  energia_total: number;
+  ultimo_registro: Sensor;
+}
+
+export interface PromedioLux {
+  promedio_lux: number;
+  cantidad_registros: number;
+}
+
+export interface ConsumoTotal {
+  total_consumo: number;
+}
+
+export interface EstadisticasReportes {
+  promedio_lux: number;
+  promedio_intensidad_led: number;
+  total_consumo_energetico: number;
+  cantidad_registros: number;
+  ultimo_registro: Sensor;
+}

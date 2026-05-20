@@ -1,0 +1,52 @@
+import { Outlet, NavLink } from 'react-router-dom';
+import Header from '../components/ui/Header';
+
+const pages = [
+  { name: 'Dashboard', path: '/' },
+  { name: 'Sensores', path: '/sensores' },
+  { name: 'Historial', path: '/historial' },
+  { name: 'Actividades', path: '/actividades' },
+  { name: 'Reportes', path: '/reportes' },
+  { name: 'Consumo', path: '/consumo' },
+  { name: 'Configuración', path: '/configuracion' }
+];
+
+const AppLayout = () => {
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <Header />
+      <div className="mx-auto flex min-h-[calc(100vh-72px)] max-w-[1600px] gap-6 px-4 pb-10 pt-6 lg:px-8">
+        <aside className="hidden w-72 flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-soft lg:flex">
+          <div>
+            <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Iluminación Inteligente</p>
+            <h1 className="mt-3 text-2xl font-semibold text-slate-900">Panel de control</h1>
+          </div>
+          <nav className="mt-6 flex flex-col gap-1">
+            {pages.map(page => (
+              <NavLink
+                key={page.path}
+                to={page.path}
+                end={page.path === '/'}
+                className={({ isActive }) =>
+                  `rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                    isActive ? 'bg-slate-900 text-white shadow-soft' : 'text-slate-700 hover:bg-slate-100'
+                  }`
+                }
+              >
+                {page.name}
+              </NavLink>
+            ))}
+          </nav>
+        </aside>
+
+        <main className="w-full rounded-3xl bg-slate-50 p-0 shadow-none lg:flex-1 lg:bg-transparent">
+          <div className="rounded-3xl bg-white p-6 shadow-soft">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default AppLayout;

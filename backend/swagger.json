@@ -1,0 +1,995 @@
+{
+  "swagger": "2.0",
+  "basePath": "/",
+  "paths": {
+    "/api/actividades": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Actividad"
+              }
+            }
+          }
+        },
+        "operationId": "get_activity_list",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "actividades"
+        ]
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Actividad"
+            }
+          }
+        },
+        "operationId": "post_activity_list",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Actividad"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "actividades"
+        ]
+      }
+    },
+    "/api/actividades/{id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "description": "ID de la actividad",
+          "name": "id",
+          "required": true,
+          "type": "integer"
+        }
+      ],
+      "put": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Actividad"
+            }
+          }
+        },
+        "operationId": "put_activity_item",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Actividad"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "actividades"
+        ]
+      },
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Actividad"
+            }
+          }
+        },
+        "operationId": "get_activity_item",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "actividades"
+        ]
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "operationId": "delete_activity_item",
+        "tags": [
+          "actividades"
+        ]
+      }
+    },
+    "/api/configuracion": {
+      "put": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Configuracion"
+            }
+          }
+        },
+        "operationId": "put_configuration",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Configuracion"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "configuracion"
+        ]
+      },
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Configuracion"
+            }
+          }
+        },
+        "operationId": "get_configuration",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "configuracion"
+        ]
+      }
+    },
+    "/api/consumo": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ConsumoEnergetico"
+              }
+            }
+          }
+        },
+        "operationId": "get_consumption_list",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "consumo"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/HealthStatus"
+            }
+          }
+        },
+        "operationId": "get_health_check",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/historial": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Sensor"
+              }
+            }
+          }
+        },
+        "operationId": "get_historial",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Fecha de fin en formato YYYY-MM-DD",
+            "name": "end_date",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "description": "Fecha de inicio en formato YYYY-MM-DD",
+            "name": "start_date",
+            "type": "string"
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "historial"
+        ]
+      }
+    },
+    "/api/reportes": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Reporte"
+            }
+          }
+        },
+        "operationId": "get_report",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "reportes"
+        ]
+      }
+    },
+    "/api/reportes/consumo-total": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ConsumoTotal"
+            }
+          }
+        },
+        "operationId": "get_total_consumption",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "reportes"
+        ]
+      }
+    },
+    "/api/reportes/estadisticas": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EstadisticasReportes"
+            }
+          }
+        },
+        "operationId": "get_statistics",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "reportes"
+        ]
+      }
+    },
+    "/api/reportes/historial": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Sensor"
+              }
+            }
+          }
+        },
+        "operationId": "get_history",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "reportes"
+        ]
+      }
+    },
+    "/api/reportes/promedio-lux": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/PromedioLux"
+            }
+          }
+        },
+        "operationId": "get_average_lux",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "reportes"
+        ]
+      }
+    },
+    "/api/sensores": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/PaginatedSensores"
+            }
+          }
+        },
+        "operationId": "get_sensor_list",
+        "parameters": [
+          {
+            "type": "integer",
+            "in": "query",
+            "description": "Cantidad de resultados por página",
+            "name": "limit"
+          },
+          {
+            "type": "integer",
+            "in": "query",
+            "description": "Página de resultados",
+            "name": "page"
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "sensores"
+        ]
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Sensor"
+            }
+          }
+        },
+        "operationId": "post_sensor_list",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/SensorInput"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "sensores"
+        ]
+      }
+    },
+    "/api/sensores/latest": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Sensor"
+            }
+          }
+        },
+        "operationId": "get_sensor_latest",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "sensores"
+        ]
+      }
+    },
+    "/api/usuarios": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Usuario"
+              }
+            }
+          }
+        },
+        "operationId": "get_user_list",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "usuarios"
+        ]
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Usuario"
+            }
+          }
+        },
+        "operationId": "post_user_list",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Usuario"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "usuarios"
+        ]
+      }
+    },
+    "/api/usuarios/{id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "description": "ID del usuario",
+          "name": "id",
+          "required": true,
+          "type": "integer"
+        }
+      ],
+      "put": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Usuario"
+            }
+          }
+        },
+        "operationId": "put_user_item",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Usuario"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "usuarios"
+        ]
+      },
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Usuario"
+            }
+          }
+        },
+        "operationId": "get_user_item",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "usuarios"
+        ]
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "operationId": "delete_user_item",
+        "tags": [
+          "usuarios"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API Iluminación Inteligente",
+    "version": "1.0",
+    "description": "API REST para monitoreo y control de iluminación inteligente"
+  },
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "tags": [
+    {
+      "name": "sensores",
+      "description": "Registro y lectura de datos del sensor"
+    },
+    {
+      "name": "actividades",
+      "description": "Gestión de actividades"
+    },
+    {
+      "name": "configuracion",
+      "description": "Gestión de configuración del sistema"
+    },
+    {
+      "name": "usuarios",
+      "description": "Gestión de usuarios"
+    },
+    {
+      "name": "historial",
+      "description": "Consulta de historial de iluminación"
+    },
+    {
+      "name": "consumo",
+      "description": "Gestión de consumo energético"
+    },
+    {
+      "name": "health",
+      "description": "Chequeo de salud del API"
+    },
+    {
+      "name": "reportes",
+      "description": "Reportes e historial de iluminación"
+    }
+  ],
+  "definitions": {
+    "SensorInput": {
+      "required": [
+        "consumo_energetico",
+        "intensidad_led",
+        "lux",
+        "modo_automatico"
+      ],
+      "properties": {
+        "lux": {
+          "type": "number",
+          "description": "Nivel de luminosidad ambiental",
+          "example": 210.5
+        },
+        "intensidad_led": {
+          "type": "integer",
+          "description": "Intensidad del LED",
+          "example": 65
+        },
+        "consumo_energetico": {
+          "type": "number",
+          "description": "Consumo energético en kWh",
+          "example": 0.85
+        },
+        "modo_automatico": {
+          "type": "boolean",
+          "description": "Modo automático/manual",
+          "example": true
+        },
+        "actividad_id": {
+          "type": "integer",
+          "description": "ID de actividad asociada"
+        }
+      },
+      "type": "object"
+    },
+    "PaginatedSensores": {
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "Registros de sensores por página",
+          "items": {
+            "$ref": "#/definitions/Sensor"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "description": "Página actual",
+          "example": 1
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Límite de registros por página",
+          "example": 20
+        },
+        "total": {
+          "type": "integer",
+          "description": "Total de registros disponibles",
+          "example": 100
+        }
+      },
+      "type": "object"
+    },
+    "Sensor": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "ID del registro de sensor",
+          "readOnly": true
+        },
+        "lux": {
+          "type": "number",
+          "description": "Nivel de luminosidad ambiental"
+        },
+        "intensidad_led": {
+          "type": "integer",
+          "description": "Intensidad LED actual"
+        },
+        "consumo_energetico": {
+          "type": "number",
+          "description": "Consumo energético actual"
+        },
+        "modo_automatico": {
+          "type": "boolean",
+          "description": "Indica si el modo es automático"
+        },
+        "actividad_id": {
+          "type": "integer",
+          "description": "Actividad asociada"
+        },
+        "registrado_en": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Fecha y hora de registro"
+        }
+      },
+      "type": "object"
+    },
+    "Actividad": {
+      "required": [
+        "nombre"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "ID de la actividad",
+          "readOnly": true
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre de la actividad",
+          "example": "Conferencia"
+        },
+        "descripcion": {
+          "type": "string",
+          "description": "Descripción de la actividad",
+          "example": "Reunión general en sala principal"
+        }
+      },
+      "type": "object"
+    },
+    "Configuracion": {
+      "required": [
+        "intensidad_led_default",
+        "max_consumo",
+        "modo_automatico",
+        "umbral_lux"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "ID de configuración",
+          "readOnly": true
+        },
+        "modo_automatico": {
+          "type": "boolean",
+          "description": "Modo automático habilitado"
+        },
+        "intensidad_led_default": {
+          "type": "integer",
+          "description": "Intensidad LED por defecto"
+        },
+        "umbral_lux": {
+          "type": "integer",
+          "description": "Umbral de luminosidad ambiental"
+        },
+        "max_consumo": {
+          "type": "number",
+          "description": "Máximo consumo energético permitido"
+        }
+      },
+      "type": "object"
+    },
+    "Usuario": {
+      "required": [
+        "correo",
+        "nombre"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "ID del usuario",
+          "readOnly": true
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre completo"
+        },
+        "correo": {
+          "type": "string",
+          "description": "Correo electrónico"
+        }
+      },
+      "type": "object"
+    },
+    "ConsumoEnergetico": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "ID del registro de consumo",
+          "readOnly": true
+        },
+        "sensor_id": {
+          "type": "integer",
+          "description": "ID del sensor asociado"
+        },
+        "total_kwh": {
+          "type": "number",
+          "description": "Consumo total en kWh"
+        },
+        "periodo_inicio": {
+          "type": "string",
+          "format": "date",
+          "description": "Fecha de inicio del periodo"
+        },
+        "periodo_fin": {
+          "type": "string",
+          "format": "date",
+          "description": "Fecha de fin del periodo"
+        },
+        "creado_en": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Fecha de creación del registro"
+        }
+      },
+      "type": "object"
+    },
+    "HealthStatus": {
+      "properties": {
+        "status": {
+          "type": "string",
+          "description": "Estado del servicio",
+          "example": "ok"
+        },
+        "service": {
+          "type": "string",
+          "description": "Nombre del servicio",
+          "example": "Sistema Inteligente de Iluminación"
+        },
+        "version": {
+          "type": "string",
+          "description": "Versión de la API",
+          "example": "1.0"
+        }
+      },
+      "type": "object"
+    },
+    "Reporte": {
+      "properties": {
+        "total_registros": {
+          "type": "integer",
+          "description": "Total de registros en el historial"
+        },
+        "energia_total": {
+          "type": "number",
+          "description": "Consumo energético total en kWh"
+        },
+        "ultimo_registro": {
+          "$ref": "#/definitions/Sensor"
+        }
+      },
+      "type": "object"
+    },
+    "PromedioLux": {
+      "properties": {
+        "promedio_lux": {
+          "type": "number",
+          "description": "Valor promedio de lux"
+        },
+        "cantidad_registros": {
+          "type": "integer",
+          "description": "Cantidad de registros utilizados para el cálculo"
+        }
+      },
+      "type": "object"
+    },
+    "ConsumoTotal": {
+      "properties": {
+        "total_consumo": {
+          "type": "number",
+          "description": "Consumo energético total en kWh"
+        }
+      },
+      "type": "object"
+    },
+    "EstadisticasReportes": {
+      "properties": {
+        "promedio_lux": {
+          "type": "number",
+          "description": "Promedio de lux en el historial"
+        },
+        "promedio_intensidad_led": {
+          "type": "number",
+          "description": "Promedio de intensidad LED en el historial"
+        },
+        "total_consumo_energetico": {
+          "type": "number",
+          "description": "Consumo energético total en kWh"
+        },
+        "cantidad_registros": {
+          "type": "integer",
+          "description": "Cantidad total de registros"
+        },
+        "ultimo_registro": {
+          "description": "Último registro de sensor",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Sensor"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    }
+  },
+  "responses": {
+    "ParseError": {
+      "description": "When a mask can't be parsed"
+    },
+    "MaskError": {
+      "description": "When any error occurs on mask"
+    }
+  }
+}
