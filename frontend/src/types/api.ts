@@ -80,3 +80,29 @@ export interface EstadisticasReportes {
   cantidad_registros: number;
   ultimo_registro: Sensor;
 }
+
+export interface Salon {
+  id: number;
+  nombre: string;
+  ubicacion: string;
+  descripcion?: string;
+  creado_en?: string;
+  actualizado_en?: string;
+  actividad_id?: number | null;
+  actividad_nombre?: string | null;
+}
+
+export interface DashboardSalon {
+  salon_id: number;
+  nombre: string;
+  actividad_id?: number | null;
+  actividad_nombre?: string | null;
+  lux?: number | null;
+  lux_minimo?: number | null;
+  lux_maximo?: number | null;
+  estado_iluminacion?: string | null;
+  nivel_alerta?: string | null;
+  intensidad_led?: number | null;
+  consumo_energetico?: number | null;
+  modo_automatico?: boolean | null;
+}

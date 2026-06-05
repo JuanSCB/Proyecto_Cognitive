@@ -21,7 +21,12 @@ class ActivityService:
         if existing:
             raise ConflictError('Ya existe una actividad con ese nombre.')
 
-        return ActivityRepository.create({'nombre': nombre, 'descripcion': payload.get('descripcion')})
+        return ActivityRepository.create({
+            'nombre': nombre,
+            'descripcion': payload.get('descripcion'),
+            'lux_minimo': payload.get('lux_minimo'),
+            'lux_maximo': payload.get('lux_maximo')
+        })
 
     @staticmethod
     def update_activity(activity, payload):
@@ -33,7 +38,12 @@ class ActivityService:
         if existing and existing.id != activity.id:
             raise ConflictError('Ya existe una actividad con ese nombre.')
 
-        return ActivityRepository.update(activity, {'nombre': nombre, 'descripcion': payload.get('descripcion')})
+        return ActivityRepository.update(activity, {
+            'nombre': nombre,
+            'descripcion': payload.get('descripcion'),
+            'lux_minimo': payload.get('lux_minimo'),
+            'lux_maximo': payload.get('lux_maximo')
+        })
 
     @staticmethod
     def delete_activity(activity):

@@ -10,6 +10,7 @@ class Sensor(db.Model):
     consumo_energetico = db.Column(db.Float, nullable=False)
     modo_automatico = db.Column(db.Boolean, nullable=False)
     actividad_id = db.Column(db.Integer, db.ForeignKey('actividades.id'), nullable=True)
+    salon_id = db.Column(db.Integer, db.ForeignKey('salones.id', ondelete='CASCADE'), nullable=False)
     registrado_en = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
     creado_en = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
     actualizado_en = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)

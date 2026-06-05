@@ -18,6 +18,14 @@ class SensorRepository:
         return {'items': items, 'page': page, 'limit': limit, 'total': total}
 
     @staticmethod
+    def list_by_salon(salon_id):
+        return Sensor.query.filter_by(salon_id=salon_id).order_by(Sensor.registrado_en.desc()).all()
+
+    @staticmethod
+    def get_latest_by_salon(salon_id):
+        return Sensor.query.filter_by(salon_id=salon_id).order_by(Sensor.registrado_en.desc()).first()
+
+    @staticmethod
     def create(data):
         sensor = Sensor(**data)
         db.session.add(sensor)

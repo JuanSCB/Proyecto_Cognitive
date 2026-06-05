@@ -1,5 +1,7 @@
 from app.repositories.history_repository import HistoryRepository
 from app.repositories.sensor_repository import SensorRepository
+from app.repositories.salon_repository import SalonRepository
+from app.utils.exceptions import BadRequestError, NotFoundError
 
 
 class ReportService:
@@ -57,4 +59,38 @@ class ReportService:
             'total_consumo_energetico': round(total_consumo, 2),
             'cantidad_registros': cantidad,
             'ultimo_registro': ultimo,
+        }
+
+    @staticmethod
+    def get_cumplimiento_iluminacion(salon_id):
+        salon = SalonRepository.get_by_id(salon_id)
+        if not salon:
+            raise NotFoundError('Salón no encontrado.')
+        actividad = salon.actividad
+        if not actividad or actividad.lux_minimo is None or actividad.lux_maximo is None:
+            raise BadRequestError('La actividad actual no tiene rango de lux definido.')
+
+        historial = HistoryRepository.list_by_salon(salon_id)
+        total = len(historial)
+        if total == 0:
+            return {
+                'salon_id': salon_id,
+                'porcentaje_adecuado': 0,
+                'porcentaje_insuficiente': 0,
+                'porcentaje_excesivo': 0,
+            }
+
+        insuficiente = sum(1 for item in historial if item.lux < actividad.lux_minimo)
+        adecuado = sum(1 for item in historial if actividad.lux_minimo <= item.lux <= actividad.lux_maximo)
+        excesivo = sum(1 for item in historial if item.lux > actividad.lux_maximo)
+
+        porcentaje_insuficiente = round(insuficiente / total * 100)
+        porcentaje_exceso = round(excesivo / total * 100)
+        porcentaje_adecuado = 100 - porcentaje_insuficiente - porcentaje_exceso
+
+        return {
+            'salon_id': salon_id,
+            'porcentaje_adecuado': porcentaje_adecuado,
+            'porcentaje_insuficiente': porcentaje_insuficiente,
+            'porcentaje_excesivo': porcentaje_exceso,
         }

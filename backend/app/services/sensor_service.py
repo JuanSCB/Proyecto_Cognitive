@@ -3,6 +3,7 @@ from app.repositories.sensor_repository import SensorRepository
 from app.repositories.config_repository import ConfigRepository
 from app.repositories.history_repository import HistoryRepository
 from app.repositories.activity_repository import ActivityRepository
+from app.repositories.salon_repository import SalonRepository
 from app.utils.exceptions import BadRequestError, NotFoundError
 
 
@@ -35,6 +36,14 @@ class SensorService:
             if not actividad:
                 raise NotFoundError('actividad_id no existe.')
 
+        salon_id = payload.get('salon_id')
+        if salon_id is None:
+            raise BadRequestError('salon_id es obligatorio.')
+
+        salon = SalonRepository.get_by_id(salon_id)
+        if not salon:
+            raise NotFoundError('salon_id no existe.')
+
         config = ConfigRepository.get_current()
         data = {
             'lux': lux,
@@ -42,6 +51,7 @@ class SensorService:
             'consumo_energetico': consumo_energetico,
             'modo_automatico': payload.get('modo_automatico'),
             'actividad_id': actividad_id,
+            'salon_id': salon_id,
         }
 
         if payload.get('modo_automatico') and lux < config.umbral_lux:

@@ -21,6 +21,7 @@ Interfaz web para el sistema inteligente de iluminación, construida con React, 
 - Visualización de métricas de consumo y reportes.
 - Consumo energético con listado de registros.
 - Configuración del sistema con ajuste de parámetros.
+- Dashboard por salones con tarjetas y vista detallada por salón.
 
 ## Requisitos
 
@@ -58,6 +59,14 @@ npm run dev
 ```
 
 Abrir `http://localhost:4173` en el navegador.
+
+## Dashboard por salones
+
+La aplicación ahora muestra un dashboard orientado a salones. La vista principal (Dashboard) muestra tarjetas por salón con información resumida (nombre, lux actual, intensidad LED, consumo y modo automático/manual). Al hacer click en una tarjeta se navega a la vista de detalle del salón:
+
+- Ruta de detalle: `/salones/:id`
+
+La API consumida para el dashboard de salones es `GET /api/dashboard/salones`.
 
 > Nota: el navegador puede mostrar "No es seguro" en local porque la aplicación se está sirviendo por HTTP y no por HTTPS. Esto es normal en desarrollo local. Para entorno de producción, debe usarse un servidor HTTPS con un certificado válido.
 

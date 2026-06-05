@@ -8,6 +8,8 @@ import MetricsPage from './pages/MetricsPage';
 import ConsumptionPage from './pages/ConsumptionPage';
 import SettingsPage from './pages/SettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
+import SalonDetailsPage from './pages/SalonDetailsPage';
+import SalonesPage from './pages/SalonesPage';
 
 const AppRoutes = () => (
   <Routes>
@@ -19,6 +21,8 @@ const AppRoutes = () => (
       <Route path="reportes" element={<MetricsPage />} />
       <Route path="consumo" element={<ConsumptionPage />} />
       <Route path="configuracion" element={<SettingsPage />} />
+      <Route path="salones/:id" element={<SalonDetailsPage />} />
+      <Route path="salones" element={<SalonesPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />

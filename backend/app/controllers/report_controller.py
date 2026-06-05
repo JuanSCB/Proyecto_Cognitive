@@ -5,6 +5,7 @@ from app.schemas.swagger_models import (
     average_lux_model,
     total_consumo_model,
     statistics_model,
+    cumplimiento_iluminacion_model,
 )
 from app.services.report_service import ReportService
 
@@ -47,3 +48,10 @@ class Statistics(Resource):
     @report_ns.marshal_with(statistics_model)
     def get(self):
         return ReportService.get_statistics()
+
+
+@report_ns.route('/cumplimiento-iluminacion/<int:salon_id>')
+class IluminacionCompliance(Resource):
+    @report_ns.marshal_with(cumplimiento_iluminacion_model)
+    def get(self, salon_id):
+        return ReportService.get_cumplimiento_iluminacion(salon_id)

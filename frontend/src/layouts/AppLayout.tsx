@@ -3,6 +3,7 @@ import Header from '../components/ui/Header';
 
 const pages = [
   { name: 'Dashboard', path: '/' },
+  { name: 'Salones', path: '/salones' },
   { name: 'Sensores', path: '/sensores' },
   { name: 'Historial', path: '/historial' },
   { name: 'Actividades', path: '/actividades' },

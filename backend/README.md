@@ -112,11 +112,31 @@ http://localhost:5000/docs
 - `DELETE /api/usuarios/<id>`
 - `GET /api/historial`
 - `GET /api/consumo`
+- `GET /api/salones`
+- `GET /api/salones/<id>`
+- `POST /api/salones`
+- `PUT /api/salones/<id>`
+- `DELETE /api/salones/<id>`
+- `GET /api/salones/<id>/sensores`
+- `GET /api/dashboard/salones`
 - `GET /api/health`
 - `GET /api/sensores/latest`
 - `GET /api/reportes/promedio-lux`
 - `GET /api/reportes/consumo-total`
 - `GET /api/reportes/estadisticas`
+
+### Payload de `POST /api/sensores`
+
+```json
+{
+  "salon_id": 1,
+  "lux": 320,
+  "intensidad_led": 60,
+  "consumo_energetico": 1.2,
+  "modo_automatico": true,
+  "actividad_id": 1
+}
+```
 
 ## Tests
 

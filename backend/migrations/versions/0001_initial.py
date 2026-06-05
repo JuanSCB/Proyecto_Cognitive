@@ -28,6 +28,17 @@ def upgrade():
         sa.Column('id', sa.Integer(), primary_key=True),
         sa.Column('nombre', sa.String(length=120), nullable=False),
         sa.Column('descripcion', sa.Text(), nullable=True),
+        sa.Column('lux_minimo', sa.Integer(), nullable=True),
+        sa.Column('lux_maximo', sa.Integer(), nullable=True),
+        sa.Column('creado_en', sa.DateTime(), server_default=sa.func.now(), nullable=False),
+        sa.Column('actualizado_en', sa.DateTime(), server_default=sa.func.now(), onupdate=sa.func.now(), nullable=False),
+    )
+    op.create_table(
+        'salones',
+        sa.Column('id', sa.Integer(), primary_key=True),
+        sa.Column('nombre', sa.String(length=120), nullable=False),
+        sa.Column('ubicacion', sa.String(length=150), nullable=True),
+        sa.Column('descripcion', sa.Text(), nullable=True),
         sa.Column('creado_en', sa.DateTime(), server_default=sa.func.now(), nullable=False),
         sa.Column('actualizado_en', sa.DateTime(), server_default=sa.func.now(), onupdate=sa.func.now(), nullable=False),
     )
@@ -49,6 +60,7 @@ def upgrade():
         sa.Column('consumo_energetico', sa.Float(), nullable=False),
         sa.Column('modo_automatico', sa.Boolean(), nullable=False),
         sa.Column('actividad_id', sa.Integer(), sa.ForeignKey('actividades.id'), nullable=True),
+        sa.Column('salon_id', sa.Integer(), sa.ForeignKey('salones.id', ondelete='CASCADE'), nullable=False),
         sa.Column('registrado_en', sa.DateTime(), server_default=sa.func.now(), nullable=False),
         sa.Column('creado_en', sa.DateTime(), server_default=sa.func.now(), nullable=False),
         sa.Column('actualizado_en', sa.DateTime(), server_default=sa.func.now(), onupdate=sa.func.now(), nullable=False),
@@ -82,6 +94,7 @@ def downgrade():
     op.drop_table('consumo_energetico')
     op.drop_table('historial_iluminacion')
     op.drop_table('sensores')
+    op.drop_table('salones')
     op.drop_table('configuracion')
     op.drop_table('actividades')
     op.drop_table('usuarios')

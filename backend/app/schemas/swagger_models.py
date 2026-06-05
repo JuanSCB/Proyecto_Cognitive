@@ -10,7 +10,49 @@ user_model = api.model('Usuario', {
 activity_model = api.model('Actividad', {
     'id': fields.Integer(readonly=True, description='ID de la actividad'),
     'nombre': fields.String(required=True, description='Nombre de la actividad', example='Conferencia'),
-    'descripcion': fields.String(description='Descripción de la actividad', example='Reunión general en sala principal')
+    'descripcion': fields.String(description='Descripción de la actividad', example='Reunión general en sala principal'),
+    'lux_minimo': fields.Integer(description='Valor mínimo de lux para la actividad', example=300),
+    'lux_maximo': fields.Integer(description='Valor máximo de lux para la actividad', example=500)
+})
+
+salon_input = api.model('SalonInput', {
+    'nombre': fields.String(required=True, description='Nombre del salón', example='Aula A101'),
+    'ubicacion': fields.String(description='Ubicación del salón', example='Edificio B, piso 2'),
+    'descripcion': fields.String(description='Descripción del salón', example='Sala para clases de informática'),
+    'actividad_id': fields.Integer(required=False, description='ID de actividad asociada', example=4, nullable=True)
+})
+
+salon_update_input = api.model('SalonUpdateInput', {
+    'nombre': fields.String(description='Nombre del salón', example='Aula A101'),
+    'ubicacion': fields.String(description='Ubicación del salón', example='Edificio B, piso 2'),
+    'descripcion': fields.String(description='Descripción del salón', example='Sala para clases de informática'),
+    'actividad_id': fields.Integer(description='ID de actividad asociada', example=4, allow_null=True)
+})
+
+salon_model = api.model('Salon', {
+    'id': fields.Integer(readonly=True, description='ID del salón'),
+    'nombre': fields.String(description='Nombre del salón'),
+    'ubicacion': fields.String(description='Ubicación del salón'),
+    'descripcion': fields.String(description='Descripción del salón'),
+    'actividad_id': fields.Integer(description='Actividad asociada'),
+    'actividad_nombre': fields.String(description='Nombre de la actividad actual asociada', attribute='actividad_nombre'),
+    'creado_en': fields.DateTime(description='Fecha de creación'),
+    'actualizado_en': fields.DateTime(description='Fecha de última actualización')
+})
+
+dashboard_salon_model = api.model('DashboardSalon', {
+    'salon_id': fields.Integer(description='ID del salón'),
+    'nombre': fields.String(description='Nombre del salón'),
+    'actividad_id': fields.Integer(description='Actividad actual asociada'),
+    'actividad_nombre': fields.String(description='Nombre de la actividad actual asociada'),
+    'lux': fields.Float(description='Último nivel de luminosidad registrado'),
+    'lux_minimo': fields.Integer(description='Valor mínimo de lux para la actividad'),
+    'lux_maximo': fields.Integer(description='Valor máximo de lux para la actividad'),
+    'estado_iluminacion': fields.String(description='Estado de iluminación calculado'),
+    'nivel_alerta': fields.String(description='Nivel de alerta del salón'),
+    'intensidad_led': fields.Integer(description='Última intensidad LED registrada'),
+    'consumo_energetico': fields.Float(description='Último consumo energético registrado'),
+    'modo_automatico': fields.Boolean(description='Último modo automático registrado')
 })
 
 config_model = api.model('Configuracion', {
@@ -22,6 +64,7 @@ config_model = api.model('Configuracion', {
 })
 
 sensor_input = api.model('SensorInput', {
+    'salon_id': fields.Integer(required=True, description='ID del salón asociado', example=1),
     'lux': fields.Float(required=True, description='Nivel de luminosidad ambiental', example=210.5),
     'intensidad_led': fields.Integer(required=True, description='Intensidad del LED', example=65),
     'consumo_energetico': fields.Float(required=True, description='Consumo energético en kWh', example=0.85),
@@ -31,6 +74,7 @@ sensor_input = api.model('SensorInput', {
 
 sensor_model = api.model('Sensor', {
     'id': fields.Integer(readonly=True, description='ID del registro de sensor'),
+    'salon_id': fields.Integer(description='ID del salón asociado'),
     'lux': fields.Float(description='Nivel de luminosidad ambiental'),
     'intensidad_led': fields.Integer(description='Intensidad LED actual'),
     'consumo_energetico': fields.Float(description='Consumo energético actual'),
@@ -76,6 +120,13 @@ statistics_model = api.model('EstadisticasReportes', {
     'total_consumo_energetico': fields.Float(description='Consumo energético total en kWh'),
     'cantidad_registros': fields.Integer(description='Cantidad total de registros'),
     'ultimo_registro': fields.Nested(sensor_model, description='Último registro de sensor', skip_none=True)
+})
+
+cumplimiento_iluminacion_model = api.model('CumplimientoIluminacion', {
+    'salon_id': fields.Integer(description='ID del salón'),
+    'porcentaje_adecuado': fields.Integer(description='Porcentaje de lecturas dentro del rango'),
+    'porcentaje_insuficiente': fields.Integer(description='Porcentaje de lecturas por debajo del rango'),
+    'porcentaje_excesivo': fields.Integer(description='Porcentaje de lecturas por encima del rango')
 })
 
 report_model = api.model('Reporte', {

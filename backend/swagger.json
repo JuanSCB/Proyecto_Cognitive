@@ -3,32 +3,6 @@
   "basePath": "/",
   "paths": {
     "/api/actividades": {
-      "get": {
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Actividad"
-              }
-            }
-          }
-        },
-        "operationId": "get_activity_list",
-        "parameters": [
-          {
-            "name": "X-Fields",
-            "in": "header",
-            "type": "string",
-            "format": "mask",
-            "description": "An optional fields mask"
-          }
-        ],
-        "tags": [
-          "actividades"
-        ]
-      },
       "post": {
         "responses": {
           "201": {
@@ -59,6 +33,32 @@
         "tags": [
           "actividades"
         ]
+      },
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Actividad"
+              }
+            }
+          }
+        },
+        "operationId": "get_activity_list",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "actividades"
+        ]
       }
     },
     "/api/actividades/{id}": {
@@ -71,6 +71,40 @@
           "type": "integer"
         }
       ],
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "operationId": "delete_activity_item",
+        "tags": [
+          "actividades"
+        ]
+      },
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Actividad"
+            }
+          }
+        },
+        "operationId": "get_activity_item",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "actividades"
+        ]
+      },
       "put": {
         "responses": {
           "200": {
@@ -101,17 +135,19 @@
         "tags": [
           "actividades"
         ]
-      },
+      }
+    },
+    "/api/configuracion": {
       "get": {
         "responses": {
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Actividad"
+              "$ref": "#/definitions/Configuracion"
             }
           }
         },
-        "operationId": "get_activity_item",
+        "operationId": "get_configuration",
         "parameters": [
           {
             "name": "X-Fields",
@@ -122,22 +158,9 @@
           }
         ],
         "tags": [
-          "actividades"
+          "configuracion"
         ]
       },
-      "delete": {
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "operationId": "delete_activity_item",
-        "tags": [
-          "actividades"
-        ]
-      }
-    },
-    "/api/configuracion": {
       "put": {
         "responses": {
           "200": {
@@ -157,29 +180,6 @@
               "$ref": "#/definitions/Configuracion"
             }
           },
-          {
-            "name": "X-Fields",
-            "in": "header",
-            "type": "string",
-            "format": "mask",
-            "description": "An optional fields mask"
-          }
-        ],
-        "tags": [
-          "configuracion"
-        ]
-      },
-      "get": {
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/Configuracion"
-            }
-          }
-        },
-        "operationId": "get_configuration",
-        "parameters": [
           {
             "name": "X-Fields",
             "in": "header",
@@ -218,6 +218,34 @@
         ],
         "tags": [
           "consumo"
+        ]
+      }
+    },
+    "/api/dashboard/salones": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DashboardSalon"
+              }
+            }
+          }
+        },
+        "operationId": "get_dashboard_salones",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "dashboard"
         ]
       }
     },
@@ -414,7 +442,208 @@
         ]
       }
     },
+    "/api/salones": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Salon"
+            }
+          }
+        },
+        "operationId": "post_salon_list",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/SalonInput"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "salones"
+        ]
+      },
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Salon"
+              }
+            }
+          }
+        },
+        "operationId": "get_salon_list",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "salones"
+        ]
+      }
+    },
+    "/api/salones/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "integer"
+        }
+      ],
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "operationId": "delete_salon_detail",
+        "tags": [
+          "salones"
+        ]
+      },
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Salon"
+            }
+          }
+        },
+        "operationId": "get_salon_detail",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "salones"
+        ]
+      },
+      "put": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Salon"
+            }
+          }
+        },
+        "operationId": "put_salon_detail",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/SalonInput"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "salones"
+        ]
+      }
+    },
+    "/api/salones/{id}/sensores": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "integer"
+        }
+      ],
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Sensor"
+              }
+            }
+          }
+        },
+        "operationId": "get_salon_sensors",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "salones"
+        ]
+      }
+    },
     "/api/sensores": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Sensor"
+            }
+          }
+        },
+        "operationId": "post_sensor_list",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/SensorInput"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "sensores"
+        ]
+      },
       "get": {
         "responses": {
           "200": {
@@ -437,37 +666,6 @@
             "in": "query",
             "description": "Página de resultados",
             "name": "page"
-          },
-          {
-            "name": "X-Fields",
-            "in": "header",
-            "type": "string",
-            "format": "mask",
-            "description": "An optional fields mask"
-          }
-        ],
-        "tags": [
-          "sensores"
-        ]
-      },
-      "post": {
-        "responses": {
-          "201": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/Sensor"
-            }
-          }
-        },
-        "operationId": "post_sensor_list",
-        "parameters": [
-          {
-            "name": "payload",
-            "required": true,
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/SensorInput"
-            }
           },
           {
             "name": "X-Fields",
@@ -508,32 +706,6 @@
       }
     },
     "/api/usuarios": {
-      "get": {
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Usuario"
-              }
-            }
-          }
-        },
-        "operationId": "get_user_list",
-        "parameters": [
-          {
-            "name": "X-Fields",
-            "in": "header",
-            "type": "string",
-            "format": "mask",
-            "description": "An optional fields mask"
-          }
-        ],
-        "tags": [
-          "usuarios"
-        ]
-      },
       "post": {
         "responses": {
           "201": {
@@ -564,6 +736,32 @@
         "tags": [
           "usuarios"
         ]
+      },
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Usuario"
+              }
+            }
+          }
+        },
+        "operationId": "get_user_list",
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "tags": [
+          "usuarios"
+        ]
       }
     },
     "/api/usuarios/{id}": {
@@ -576,33 +774,13 @@
           "type": "integer"
         }
       ],
-      "put": {
+      "delete": {
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/Usuario"
-            }
+            "description": "Success"
           }
         },
-        "operationId": "put_user_item",
-        "parameters": [
-          {
-            "name": "payload",
-            "required": true,
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Usuario"
-            }
-          },
-          {
-            "name": "X-Fields",
-            "in": "header",
-            "type": "string",
-            "format": "mask",
-            "description": "An optional fields mask"
-          }
-        ],
+        "operationId": "delete_user_item",
         "tags": [
           "usuarios"
         ]
@@ -630,13 +808,33 @@
           "usuarios"
         ]
       },
-      "delete": {
+      "put": {
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Usuario"
+            }
           }
         },
-        "operationId": "delete_user_item",
+        "operationId": "put_user_item",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Usuario"
+            }
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
         "tags": [
           "usuarios"
         ]
@@ -680,6 +878,14 @@
       "description": "Gestión de consumo energético"
     },
     {
+      "name": "salones",
+      "description": "Gestión de salones"
+    },
+    {
+      "name": "dashboard",
+      "description": "Dashboard y últimas lecturas por salón"
+    },
+    {
       "name": "health",
       "description": "Chequeo de salud del API"
     },
@@ -694,9 +900,15 @@
         "consumo_energetico",
         "intensidad_led",
         "lux",
-        "modo_automatico"
+        "modo_automatico",
+        "salon_id"
       ],
       "properties": {
+        "salon_id": {
+          "type": "integer",
+          "description": "ID del salón asociado",
+          "example": 1
+        },
         "lux": {
           "type": "number",
           "description": "Nivel de luminosidad ambiental",
@@ -724,39 +936,16 @@
       },
       "type": "object"
     },
-    "PaginatedSensores": {
-      "properties": {
-        "items": {
-          "type": "array",
-          "description": "Registros de sensores por página",
-          "items": {
-            "$ref": "#/definitions/Sensor"
-          }
-        },
-        "page": {
-          "type": "integer",
-          "description": "Página actual",
-          "example": 1
-        },
-        "limit": {
-          "type": "integer",
-          "description": "Límite de registros por página",
-          "example": 20
-        },
-        "total": {
-          "type": "integer",
-          "description": "Total de registros disponibles",
-          "example": 100
-        }
-      },
-      "type": "object"
-    },
     "Sensor": {
       "properties": {
         "id": {
           "type": "integer",
           "description": "ID del registro de sensor",
           "readOnly": true
+        },
+        "salon_id": {
+          "type": "integer",
+          "description": "ID del salón asociado"
         },
         "lux": {
           "type": "number",
@@ -782,6 +971,33 @@
           "type": "string",
           "format": "date-time",
           "description": "Fecha y hora de registro"
+        }
+      },
+      "type": "object"
+    },
+    "PaginatedSensores": {
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "Registros de sensores por página",
+          "items": {
+            "$ref": "#/definitions/Sensor"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "description": "Página actual",
+          "example": 1
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Límite de registros por página",
+          "example": 20
+        },
+        "total": {
+          "type": "integer",
+          "description": "Total de registros disponibles",
+          "example": 100
         }
       },
       "type": "object"
@@ -896,6 +1112,90 @@
       },
       "type": "object"
     },
+    "SalonInput": {
+      "required": [
+        "nombre"
+      ],
+      "properties": {
+        "nombre": {
+          "type": "string",
+          "description": "Nombre del salón",
+          "example": "Aula A101"
+        },
+        "ubicacion": {
+          "type": "string",
+          "description": "Ubicación del salón",
+          "example": "Edificio B, piso 2"
+        },
+        "descripcion": {
+          "type": "string",
+          "description": "Descripción del salón",
+          "example": "Sala para clases de informática"
+        }
+      },
+      "type": "object"
+    },
+    "Salon": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "ID del salón",
+          "readOnly": true
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre del salón"
+        },
+        "ubicacion": {
+          "type": "string",
+          "description": "Ubicación del salón"
+        },
+        "descripcion": {
+          "type": "string",
+          "description": "Descripción del salón"
+        },
+        "creado_en": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Fecha de creación"
+        },
+        "actualizado_en": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Fecha de última actualización"
+        }
+      },
+      "type": "object"
+    },
+    "DashboardSalon": {
+      "properties": {
+        "salon_id": {
+          "type": "integer",
+          "description": "ID del salón"
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre del salón"
+        },
+        "lux": {
+          "type": "number",
+          "description": "Último nivel de luminosidad registrado"
+        },
+        "intensidad_led": {
+          "type": "integer",
+          "description": "Última intensidad LED registrada"
+        },
+        "consumo_energetico": {
+          "type": "number",
+          "description": "Último consumo energético registrado"
+        },
+        "modo_automatico": {
+          "type": "boolean",
+          "description": "Último modo automático registrado"
+        }
+      },
+      "type": "object"
+    },
     "HealthStatus": {
       "properties": {
         "status": {
@@ -991,5 +1291,6 @@
     "MaskError": {
       "description": "When any error occurs on mask"
     }
-  }
+  },
+  "host": "localhost:5000"
 }
