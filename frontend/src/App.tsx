@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes';
+import ChatBot from './components/ui/ChatBot';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
     >
       <div className="min-h-screen bg-slate-50">
         <AppRoutes />
+        <ChatBot />
       </div>
     </BrowserRouter>
   );

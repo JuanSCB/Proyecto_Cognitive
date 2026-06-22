@@ -1,18 +1,32 @@
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import Header from '../components/ui/Header';
-
-const pages = [
-  { name: 'Dashboard', path: '/' },
-  { name: 'Salones', path: '/salones' },
-  { name: 'Sensores', path: '/sensores' },
-  { name: 'Historial', path: '/historial' },
-  { name: 'Actividades', path: '/actividades' },
-  { name: 'Reportes', path: '/reportes' },
-  { name: 'Consumo', path: '/consumo' },
-  { name: 'Configuración', path: '/configuracion' }
-];
+import { useAuth } from '../context/AuthContext';
 
 const AppLayout = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const pages = [
+    { name: 'Dashboard', path: '/' },
+    { name: 'Salones', path: '/salones' },
+    { name: 'Sensores', path: '/sensores' },
+    { name: 'Historial', path: '/historial' },
+    { name: 'Actividades', path: '/actividades' },
+    { name: 'Reportes', path: '/reportes' },
+    { name: 'Consumo', path: '/consumo' }
+  ];
+
+  if (user?.rol === 'profesor') {
+    pages.push({ name: 'Configuración', path: '/configuracion' });
+  }
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <Header />
@@ -38,6 +52,21 @@ const AppLayout = () => {
               </NavLink>
             ))}
           </nav>
+
+          <div className="mt-auto rounded-3xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-semibold text-slate-900">{user?.nombre ?? 'Usuario'}</p>
+            <p className="text-sm text-slate-500 capitalize">{user?.rol ?? 'Invitado'}</p>
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              className="mt-4 w-full rounded-2xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white hover:bg-rose-700"
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </aside>
 
         <main className="w-full rounded-3xl bg-slate-50 p-0 shadow-none lg:flex-1 lg:bg-transparent">

@@ -10,10 +10,23 @@ import SettingsPage from './pages/SettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import SalonDetailsPage from './pages/SalonDetailsPage';
 import SalonesPage from './pages/SalonesPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ProtectedRoute from './components/ui/ProtectedRoute';
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<AppLayout />}>
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/register" element={<RegisterPage />} />
+
+    <Route
+      path="/"
+      element={
+        <ProtectedRoute>
+          <AppLayout />
+        </ProtectedRoute>
+      }
+    >
       <Route index element={<DashboardPage />} />
       <Route path="sensores" element={<SensorsPage />} />
       <Route path="historial" element={<HistoryPage />} />
@@ -25,7 +38,8 @@ const AppRoutes = () => (
       <Route path="salones" element={<SalonesPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Route>
-    <Route path="*" element={<Navigate to="/" replace />} />
+
+    <Route path="*" element={<Navigate to="/login" replace />} />
   </Routes>
 );
 

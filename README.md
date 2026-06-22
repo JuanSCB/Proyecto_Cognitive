@@ -48,4 +48,6 @@ El frontend se construye con `VITE_API_BASE_URL=http://localhost:5000`.
 ```bash
 docker compose down
 ```
-
+```bash
+docker compose up -d
+```

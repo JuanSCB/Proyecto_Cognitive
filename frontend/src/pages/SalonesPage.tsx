@@ -3,6 +3,7 @@ import LoadingState from '../components/ui/LoadingState';
 import Modal from '../components/ui/Modal';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import SalonForm from '../components/ui/SalonForm';
+import { useAuth } from '../context/AuthContext';
 import { getSalones, createSalon, updateSalon, deleteSalon } from '../services/salonesService';
 import { getActivities } from '../services/activitiesService';
 import type { Salon, Actividad } from '../types/api';
@@ -16,6 +17,8 @@ const SalonesPage = () => {
   const [editing, setEditing] = useState<Salon | null>(null);
   const [deleting, setDeleting] = useState<Salon | null>(null);
   const [activities, setActivities] = useState<Actividad[]>([]);
+  const { user } = useAuth();
+  const canEdit = user?.rol === 'profesor';
 
   const load = async () => {
     setLoading(true);
@@ -77,11 +80,16 @@ const SalonesPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Salones</h2>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <button onClick={() => setShowCreate(true)} className="rounded-md bg-slate-900 px-4 py-2 text-sm text-white">Nuevo Salón</button>
+          <h2 className="text-lg font-semibold">Salones</h2>
+          {!canEdit && <p className="text-sm text-slate-500">Modo solo lectura: solo puedes ver la información.</p>}
         </div>
+        {canEdit ? (
+          <div>
+            <button onClick={() => setShowCreate(true)} className="rounded-md bg-slate-900 px-4 py-2 text-sm text-white">Nuevo Salón</button>
+          </div>
+        ) : null}
       </div>
 
       {loading ? (
@@ -114,8 +122,14 @@ const SalonesPage = () => {
                       <td className="py-3 text-sm text-slate-700">{s.actividad_nombre ?? 'Sin actividad'}</td>
                       <td className="py-3 text-sm text-slate-700">
                         <div className="flex gap-2">
-                          <button onClick={() => setEditing(s)} className="rounded-md border px-3 py-1 text-sm">Editar</button>
-                          <button onClick={() => setDeleting(s)} className="rounded-md border px-3 py-1 text-sm text-rose-600">Eliminar</button>
+                          {canEdit ? (
+                            <>
+                              <button onClick={() => setEditing(s)} className="rounded-md border px-3 py-1 text-sm">Editar</button>
+                              <button onClick={() => setDeleting(s)} className="rounded-md border px-3 py-1 text-sm text-rose-600">Eliminar</button>
+                            </>
+                          ) : (
+                            <span className="text-sm text-slate-500">Solo lectura</span>
+                          )}
                         </div>
                       </td>
                     </tr>

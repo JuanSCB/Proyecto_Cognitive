@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, abort
 from app.schemas.swagger_models import activity_model
 from app.services.activity_service import ActivityService
+from app.decorators import require_role
 
 activity_ns = Namespace('actividades', description='Gestión de actividades')
 
@@ -9,11 +10,14 @@ activity_ns = Namespace('actividades', description='Gestión de actividades')
 class ActivityList(Resource):
     @activity_ns.marshal_list_with(activity_model)
     def get(self):
+        """Obtener lista de actividades (Accesible para todos)"""
         return ActivityService.list_activities()
 
     @activity_ns.expect(activity_model, validate=True)
     @activity_ns.marshal_with(activity_model, code=201)
-    def post(self):
+    @require_role('profesor')
+    def post(self, usuario_id=None, usuario_role=None):
+        """Crear nueva actividad (Solo profesor)"""
         payload = activity_ns.payload
         try:
             activity = ActivityService.create_activity(payload)
@@ -27,6 +31,7 @@ class ActivityList(Resource):
 class ActivityItem(Resource):
     @activity_ns.marshal_with(activity_model)
     def get(self, id):
+        """Obtener detalles de una actividad (Accesible para todos)"""
         activity = ActivityService.get_activity(id)
         if not activity:
             abort(404, 'Actividad no encontrada')
@@ -34,7 +39,9 @@ class ActivityItem(Resource):
 
     @activity_ns.expect(activity_model, validate=True)
     @activity_ns.marshal_with(activity_model)
-    def put(self, id):
+    @require_role('profesor')
+    def put(self, id, usuario_id=None, usuario_role=None):
+        """Actualizar actividad (Solo profesor)"""
         activity = ActivityService.get_activity(id)
         if not activity:
             abort(404, 'Actividad no encontrada')
@@ -43,7 +50,9 @@ class ActivityItem(Resource):
         except ValueError as error:
             abort(400, str(error))
 
-    def delete(self, id):
+    @require_role('profesor')
+    def delete(self, id, usuario_id=None, usuario_role=None):
+        """Eliminar actividad (Solo profesor)"""
         activity = ActivityService.get_activity(id)
         if not activity:
             abort(404, 'Actividad no encontrada')

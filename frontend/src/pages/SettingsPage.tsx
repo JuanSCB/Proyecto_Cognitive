@@ -2,10 +2,13 @@ import { FormEvent, useEffect, useState } from 'react';
 import Card from '../components/ui/Card';
 import LoadingState from '../components/ui/LoadingState';
 import useFetch from '../hooks/useFetch';
+import { useAuth } from '../context/AuthContext';
 import { getConfiguration, updateConfiguration } from '../services/configService';
 import type { Configuracion } from '../types/api';
 
 const SettingsPage = () => {
+  const { user } = useAuth();
+  const canEdit = user?.rol === 'profesor';
   const configState = useFetch(getConfiguration, []);
   const [configuration, setConfiguration] = useState<Configuracion | null>(null);
   const [saving, setSaving] = useState(false);
@@ -15,6 +18,17 @@ const SettingsPage = () => {
       setConfiguration(configState.data);
     }
   }, [configState.data]);
+
+  if (!canEdit) {
+    return (
+      <div className="mx-auto flex min-h-screen items-center justify-center px-4 py-16">
+        <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-8 shadow-soft text-center">
+          <h1 className="text-2xl font-semibold text-slate-900">Acceso denegado</h1>
+          <p className="mt-4 text-sm text-slate-600">Solo los profesores pueden ver y editar la configuración del sistema.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (configState.loading || !configuration) {
     return <LoadingState />;
