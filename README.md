@@ -81,16 +81,16 @@ Servicios:
 ```
 if lux <= 100:
 	estado = "Ambiente oscuro"
-elif lux <= 1200:
+elif lux <= 6000:
 	estado = "Ambiente con iluminación media"
 else:
 	estado = "Ambiente muy iluminado"
 ```
 
-PWM:
-- Ambiente oscuro → PWM = 255 (100%)
-- Ambiente con iluminación media → PWM = 80 (~31%)
-- Ambiente muy iluminado → PWM = 0 (0%)
+Intensidad LED en modo automático:
+- Ambiente oscuro → `intensidadLED = 160`
+- Ambiente con iluminación media → `intensidadLED = 80`
+- Ambiente muy iluminado → `intensidadLED = 0`
 
 ## Documentación y archivos Markdown
 

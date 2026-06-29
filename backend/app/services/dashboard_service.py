@@ -30,7 +30,7 @@ class DashboardService:
                 estado_iluminacion = 'Ambiente oscuro'
                 nivel_alerta = 'rojo'
 
-            elif lux_value <= 1200:
+            elif lux_value <= 6000:
 
                 estado_iluminacion = 'Ambiente con iluminación media'
                 nivel_alerta = 'amarillo'

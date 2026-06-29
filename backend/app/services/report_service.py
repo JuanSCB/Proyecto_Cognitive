@@ -78,8 +78,8 @@ class ReportService:
             }
 
         insuficiente = sum(1 for item in historial if item.lux <= 100)
-        adecuado = sum(1 for item in historial if item.lux <= 1200 and item.lux > 100)
-        excesivo = sum(1 for item in historial if item.lux > 1200)
+        adecuado = sum(1 for item in historial if item.lux <= 6000 and item.lux > 100)
+        excesivo = sum(1 for item in historial if item.lux > 6000)
 
         porcentaje_insuficiente = round(insuficiente / total * 100)
         porcentaje_exceso = round(excesivo / total * 100)

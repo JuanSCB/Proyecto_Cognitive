@@ -1,5 +1,6 @@
 from flask_restx import fields
 from app import api
+from app.utils.datetime_utils import PeruDateTime
 
 user_model = api.model('Usuario', {
     'id': fields.Integer(readonly=True, description='ID del usuario'),
@@ -36,8 +37,8 @@ salon_model = api.model('Salon', {
     'descripcion': fields.String(description='Descripción del salón'),
     'actividad_id': fields.Integer(description='Actividad asociada'),
     'actividad_nombre': fields.String(description='Nombre de la actividad actual asociada', attribute='actividad_nombre'),
-    'creado_en': fields.DateTime(description='Fecha de creación'),
-    'actualizado_en': fields.DateTime(description='Fecha de última actualización')
+    'creado_en': PeruDateTime(description='Fecha de creación'),
+    'actualizado_en': PeruDateTime(description='Fecha de última actualización')
 })
 
 dashboard_salon_model = api.model('DashboardSalon', {
@@ -80,7 +81,7 @@ sensor_model = api.model('Sensor', {
     'consumo_energetico': fields.Float(description='Consumo energético actual'),
     'modo_automatico': fields.Boolean(description='Indica si el modo es automático'),
     'actividad_id': fields.Integer(description='Actividad asociada'),
-    'registrado_en': fields.DateTime(description='Fecha y hora de registro')
+    'registrado_en': PeruDateTime(description='Fecha y hora de registro')
 })
 
 consumption_model = api.model('ConsumoEnergetico', {
@@ -89,7 +90,7 @@ consumption_model = api.model('ConsumoEnergetico', {
     'total_kwh': fields.Float(description='Consumo total en kWh'),
     'periodo_inicio': fields.Date(description='Fecha de inicio del periodo'),
     'periodo_fin': fields.Date(description='Fecha de fin del periodo'),
-    'creado_en': fields.DateTime(description='Fecha de creación del registro')
+    'creado_en': PeruDateTime(description='Fecha de creación del registro')
 })
 
 paginated_sensor_model = api.model('PaginatedSensores', {

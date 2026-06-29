@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_restx import Api
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from app.utils.datetime_utils import PeruJSONProvider
 
 load_dotenv()
 
@@ -24,6 +25,9 @@ def create_app(test_config=None):
 
     if test_config is not None:
         app.config.update(test_config)
+
+    app.json_provider_class = PeruJSONProvider
+    app.json = app.json_provider_class(app)
 
     db.init_app(app)
     migrate.init_app(app, db)
