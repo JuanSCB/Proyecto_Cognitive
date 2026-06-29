@@ -66,9 +66,6 @@ class ReportService:
         salon = SalonRepository.get_by_id(salon_id)
         if not salon:
             raise NotFoundError('Salón no encontrado.')
-        actividad = salon.actividad
-        if not actividad or actividad.lux_minimo is None or actividad.lux_maximo is None:
-            raise BadRequestError('La actividad actual no tiene rango de lux definido.')
 
         historial = HistoryRepository.list_by_salon(salon_id)
         total = len(historial)
@@ -80,9 +77,9 @@ class ReportService:
                 'porcentaje_excesivo': 0,
             }
 
-        insuficiente = sum(1 for item in historial if item.lux < actividad.lux_minimo)
-        adecuado = sum(1 for item in historial if actividad.lux_minimo <= item.lux <= actividad.lux_maximo)
-        excesivo = sum(1 for item in historial if item.lux > actividad.lux_maximo)
+        insuficiente = sum(1 for item in historial if item.lux <= 100)
+        adecuado = sum(1 for item in historial if item.lux <= 1200 and item.lux > 100)
+        excesivo = sum(1 for item in historial if item.lux > 1200)
 
         porcentaje_insuficiente = round(insuficiente / total * 100)
         porcentaje_exceso = round(excesivo / total * 100)

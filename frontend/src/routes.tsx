@@ -9,6 +9,7 @@ import ConsumptionPage from './pages/ConsumptionPage';
 import SettingsPage from './pages/SettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import SalonDetailsPage from './pages/SalonDetailsPage';
+import SalonHistoryPage from './pages/SalonHistoryPage';
 import SalonesPage from './pages/SalonesPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -35,6 +36,7 @@ const AppRoutes = () => (
       <Route path="consumo" element={<ConsumptionPage />} />
       <Route path="configuracion" element={<SettingsPage />} />
       <Route path="salones/:id" element={<SalonDetailsPage />} />
+      <Route path="salones/:id/historial" element={<SalonHistoryPage />} />
       <Route path="salones" element={<SalonesPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Route>
