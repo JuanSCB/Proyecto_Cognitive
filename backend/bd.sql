@@ -222,9 +222,12 @@ CREATE TABLE `usuarios` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(120) NOT NULL,
   `correo` varchar(150) NOT NULL,
-  `rol` varchar(50) NOT NULL DEFAULT 'usuario',
+  `password_hash` varchar(255) NOT NULL,
+  `rol` varchar(50) NOT NULL DEFAULT 'alumno',
+  `activo` tinyint(1) NOT NULL DEFAULT '1',
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `actualizado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `actualizado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+      ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `correo` (`correo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
