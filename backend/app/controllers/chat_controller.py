@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from flask import request
 import requests
+import os
 
 chat_ns = Namespace('chat', description='Chatbot especializado LumiBot')
 
@@ -11,6 +12,14 @@ message_model = chat_ns.model('ChatMessage', {
 response_model = chat_ns.model('ChatResponse', {
     'respuesta': fields.String(description='Respuesta del chatbot')
 })
+
+# URL de Ollama obtenida desde Docker Compose
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434")
+
+# Modelo a utilizar
+OLLAMA_MODEL = "gemma3:1b"
+# Si más adelante utilizas Mistral, simplemente cambia por:
+# OLLAMA_MODEL = "mistral"
 
 PALABRAS_CLAVE = [
     'esp32',
@@ -35,10 +44,15 @@ PALABRAS_CLAVE = [
     'alumno',
     'configuracion',
     'ollama',
-    'iluminacion'
+    'iluminacion',
+    'aws',
+    'ec2',
+    'api',
+    'backend',
+    'frontend'
 ]
 
-MISTRAL_PROMPT = '''
+SYSTEM_PROMPT = """
 Eres LumiBot.
 
 Asistente virtual del proyecto
@@ -53,6 +67,7 @@ Tu conocimiento se limita exclusivamente a:
 - Flask
 - React
 - Docker
+- AWS EC2
 - MySQL
 - JWT
 - Ollama
@@ -70,60 +85,93 @@ No inventes información.
 
 No respondas preguntas sobre deportes, política, historia, matemáticas, cultura general, entretenimiento o cualquier tema ajeno al proyecto.
 
-Si la pregunta está fuera del dominio permitido, responde exactamente:
+Si la pregunta está fuera del dominio permitido responde exactamente:
 
-"Lo siento, solo puedo responder preguntas relacionadas con el Sistema Inteligente de Iluminación Académica."
+Lo siento, solo puedo responder preguntas relacionadas con el Sistema Inteligente de Iluminación Académica.
 
-Limita tus respuestas a un máximo de 5 líneas.
-'''
+Limita las respuestas a máximo cinco líneas.
+"""
+
 
 @chat_ns.route('')
 class Chat(Resource):
+
     @chat_ns.expect(message_model, validate=True)
     @chat_ns.response(200, 'Respuesta generada', response_model)
     @chat_ns.response(400, 'Solicitud inválida', response_model)
+
     def post(self):
+
         payload = request.get_json() or {}
-        pregunta = str(payload.get('mensaje', '')).strip()
+        pregunta = str(payload.get("mensaje", "")).strip()
 
         if not pregunta:
-            return {'respuesta': 'Lo siento, solo puedo responder preguntas relacionadas con el Sistema Inteligente de Iluminación Académica.'}, 400
+            return {
+                "respuesta": "Lo siento, solo puedo responder preguntas relacionadas con el Sistema Inteligente de Iluminación Académica."
+            }, 400
 
         pregunta_lower = pregunta.lower()
-        permitido = any(palabra in pregunta_lower for palabra in PALABRAS_CLAVE)
 
+        permitido = any(
+            palabra in pregunta_lower
+            for palabra in PALABRAS_CLAVE
+        )
+
+        print("=" * 60)
         print("Pregunta:", pregunta)
+        print("=" * 60)
 
         if not permitido:
             return {
-                'respuesta': 'Lo siento, solo puedo responder preguntas relacionadas con el Sistema Inteligente de Iluminación Académica.'
+                "respuesta": "Lo siento, solo puedo responder preguntas relacionadas con el Sistema Inteligente de Iluminación Académica."
             }, 200
+
         try:
-            print("Enviando petición a Ollama")
+
+            print("Enviando petición a Ollama...")
+            print("URL:", OLLAMA_URL)
+            print("Modelo:", OLLAMA_MODEL)
+
             response = requests.post(
-                'http://host.docker.internal:11434/api/generate',
+                f"{OLLAMA_URL}/api/generate",
                 json={
-                    'model': 'mistral',
-                    'prompt': MISTRAL_PROMPT + '\n\nUsuario: ' + pregunta + '\nLumiBot:',
-                    'stream': False
+                    "model": OLLAMA_MODEL,
+                    "prompt": f"{SYSTEM_PROMPT}\n\nUsuario: {pregunta}\nLumiBot:",
+                    "stream": False
                 },
-                timeout=30
+                timeout=120
             )
+
             response.raise_for_status()
+
             data = response.json()
-            print(response.status_code)
-            print(response.text)
-            print(data)
-            answer = data.get('response', '').strip()
 
-            if not answer:
-                answer = 'Lo siento, no pude generar una respuesta en este momento.'
+            respuesta = data.get("response", "").strip()
 
-            return {'respuesta': answer}
+            if not respuesta:
+                respuesta = "Lo siento, no pude generar una respuesta."
+
+            print("Respuesta generada correctamente.")
+
+            return {
+                "respuesta": respuesta
+            }, 200
+
+        except requests.exceptions.Timeout:
+            return {
+                "respuesta": "LumiBot tardó demasiado en responder."
+            }, 500
+
+        except requests.exceptions.ConnectionError:
+            return {
+                "respuesta": "No fue posible conectar con Ollama."
+            }, 500
+
         except Exception as e:
+
             import traceback
             traceback.print_exc()
 
             return {
-                'respuesta': f"{type(e).__name__}: {e}"
+                "respuesta": f"Error interno: {str(e)}"
             }, 500
