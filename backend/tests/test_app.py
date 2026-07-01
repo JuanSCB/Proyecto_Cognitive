@@ -167,6 +167,52 @@ def test_salon_crud_and_salon_sensors(test_client):
     assert delete_resp.status_code == 200
 
 
+def test_chat_analysis_uses_real_room_data(test_client, monkeypatch):
+    with test_client.application.app_context():
+        professor_token = create_token(user_id=1, role='profesor')
+        activity_resp = test_client.post('/api/actividades', json={'nombre': 'Clase de laboratorio', 'descripcion': 'Prueba', 'lux_minimo': 100, 'lux_maximo': 300}, headers={'Authorization': f'Bearer {professor_token}'})
+        assert activity_resp.status_code == 201
+        actividad_id = activity_resp.get_json()['id']
+
+        salon_resp = test_client.post('/api/salones', json={
+            'nombre': 'Laboratorio A',
+            'ubicacion': 'Edificio A',
+            'descripcion': 'Sala para análisis',
+            'actividad_id': actividad_id
+        }, headers={'Authorization': f'Bearer {professor_token}'})
+        assert salon_resp.status_code == 201
+        salon_id = salon_resp.get_json()['id']
+
+        sensor_resp = test_client.post('/api/sensores', json={
+            'salon_id': salon_id,
+            'lux': 180.0,
+            'intensidad_led': 72,
+            'consumo_energetico': 1.4,
+            'modo_automatico': True
+        }, headers={'Authorization': f'Bearer {professor_token}'})
+        assert sensor_resp.status_code == 201
+        sensor_id = sensor_resp.get_json()['id']
+
+        db.session.add_all([
+            HistorialIluminacion(sensor_id=sensor_id, lux=160.0, intensidad_led=68, consumo_energetico=1.2, modo_automatico=True),
+            HistorialIluminacion(sensor_id=sensor_id, lux=190.0, intensidad_led=74, consumo_energetico=1.5, modo_automatico=True),
+        ])
+        db.session.commit()
+
+    class FakeResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {'response': 'Estado general estable con iluminación adecuada.'}
+
+    monkeypatch.setattr('app.controllers.chat_controller.requests.post', lambda *args, **kwargs: FakeResponse())
+
+    response = test_client.post('/api/chat', json={'mensaje': 'Analiza el Laboratorio A'})
+    assert response.status_code == 200
+    assert response.get_json()['respuesta'] == 'Estado general estable con iluminación adecuada.'
+
+
 def test_ai_analysis_endpoint_uses_real_room_data(test_client, monkeypatch):
     with test_client.application.app_context():
         professor_token = create_token(user_id=1, role='profesor')
