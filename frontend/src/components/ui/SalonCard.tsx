@@ -1,6 +1,8 @@
-import { FC } from 'react';
+import { FC, useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { DashboardSalon } from '../../types/api';
+import { analyzeRoom } from '../../services/dashboardService';
+import type { DashboardSalon, RoomAnalysisResponse } from '../../types/api';
+import AiAnalysisModal from './AiAnalysisModal';
 
 interface Props {
   salon: DashboardSalon;
@@ -45,9 +47,32 @@ const getAlertLevel = (nivel?: string | null, estado?: string | null) => {
 
 const SalonCard: FC<Props> = ({ salon }) => {
   const navigate = useNavigate();
+  const [analysis, setAnalysis] = useState<RoomAnalysisResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleClick = () => {
     navigate(`/salones/${salon.salon_id}`);
+  };
+
+  const handleAnalyze = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setLoading(true);
+    setError(null);
+    setAnalysis(null);
+
+    try {
+      const data = await analyzeRoom(salon.salon_id);
+      setAnalysis(data);
+    } catch (err: unknown) {
+      const message = err && typeof err === 'object' && 'data' in err && err.data && typeof err.data === 'object' && 'message' in err.data
+        ? String(err.data.message)
+        : 'No fue posible generar el análisis.';
+      setError(message);
+      window.alert(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const activityTitle = '🎯 Escenario de Operación';
@@ -84,7 +109,19 @@ const SalonCard: FC<Props> = ({ salon }) => {
           <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Lux actual</p>
           <p className="mt-2 text-2xl font-semibold text-slate-900">{luxDisplay}</p>
         </div>
+
+        <button
+          type="button"
+          onClick={handleAnalyze}
+          disabled={loading}
+          className="rounded-2xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading ? 'Analizando...' : 'Analizar con IA'}
+        </button>
       </div>
+
+      {error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null}
+      <AiAnalysisModal analysis={analysis} loading={loading} onClose={() => setAnalysis(null)} />
     </div>
   );
 };

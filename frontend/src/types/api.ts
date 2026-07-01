@@ -106,3 +106,10 @@ export interface DashboardSalon {
   consumo_energetico?: number | null;
   modo_automatico?: boolean | null;
 }
+
+export interface RoomAnalysisResponse {
+  salon: string;
+  analisis: string;
+  fecha: string;
+  modelo: string;
+}

@@ -10,6 +10,7 @@ from app.controllers.auth_controller import auth_ns
 from app.controllers.chat_controller import chat_ns
 from app.controllers.health.health_controller import health_ns
 from app.controllers.report_controller import report_ns
+from app.controllers.ai_controller import ai_ns
 
 
 def register_routes(api):
@@ -25,3 +26,4 @@ def register_routes(api):
     api.add_namespace(dashboard_ns, path='/api/dashboard')
     api.add_namespace(health_ns, path='/api/health')
     api.add_namespace(report_ns, path='/api/reportes')
+    api.add_namespace(ai_ns, path='/api/ai')
