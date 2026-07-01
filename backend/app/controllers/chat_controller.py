@@ -2,7 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from flask import request
 import requests
 import os
-import re
+import unicodedata
 from app import db
 from app.models.salon import Salon
 from app.models.sensor import Sensor
@@ -100,42 +100,98 @@ Lo siento, solo puedo responder preguntas relacionadas con el Sistema Inteligent
 Limita las respuestas a máximo cinco líneas.
 """
 
-ANALYSIS_KEYWORDS = [
-    'analiza', 'análisis', 'estado', 'salón', 'salones', 'laboratorio', 'laboratorios',
-    'consumo', 'lux', 'iluminación', 'recomendación', 'reporte', 'diagnóstico'
-]
+ANALYSIS_KEYWORDS = {
+    'analiza', 'analizar', 'analisis', 'estado', 'como', 'estuvo', 'reporte', 'diagnostico',
+    'recomendacion', 'recomendaciones', 'consumo', 'lux', 'iluminacion', 'funcionando', 'funciona'
+}
+ROOM_KEYWORDS = {'salon', 'salones', 'laboratorio', 'laboratorios', 'aula', 'aulas', 'sala', 'salas'}
+STOP_WORDS = {'el', 'la', 'los', 'las', 'del', 'de', 'al', 'para', 'y', 'o', 'como', 'esta', 'estuvo', 'analiza', 'analizar', 'analisis', 'estado', 'reporte', 'diagnostico', 'recomendacion', 'recomendaciones', 'consumo', 'lux', 'iluminacion', 'funcionando', 'funciona'}
 
 
-def _extract_salon_reference(text):
-    text = text.lower().strip()
-    patterns = [
-        r'\bsalón\s*(\d+)\b',
-        r'\blaboratorio\s*([a-z0-9]+)\b',
-        r'\bsalon\s*(\d+)\b',
-        r'\b[a-z]+\s*(\d+)\b'
-    ]
+def normalize_text(text):
+    if not text:
+        return ''
 
-    for pattern in patterns:
-        match = re.search(pattern, text)
-        if match:
-            value = match.group(1).strip()
-            if value:
-                return value
-
-    return None
+    normalized = unicodedata.normalize('NFKD', str(text))
+    normalized = normalized.encode('ascii', 'ignore').decode('ascii')
+    normalized = normalized.lower()
+    normalized = ''.join(ch if ch.isalnum() or ch.isspace() else ' ' for ch in normalized)
+    normalized = ' '.join(normalized.split())
+    return normalized
 
 
-def _find_salon_by_reference(reference):
-    if reference is None:
+NORMALIZED_PALABRAS_CLAVE = set(normalize_text(' '.join(PALABRAS_CLAVE)).split())
+
+
+def detect_analysis_intent(text):
+    normalized = normalize_text(text)
+    if not normalized:
+        return False
+
+    tokens = normalized.split()
+    has_room_context = any(token in ROOM_KEYWORDS for token in tokens)
+    has_general_analysis_context = any(token in {'consumo', 'lux', 'iluminacion', 'estado', 'reporte', 'diagnostico', 'recomendacion', 'recomendaciones'} for token in tokens)
+    has_analysis_context = any(token in ANALYSIS_KEYWORDS for token in tokens)
+
+    if has_room_context:
+        return has_analysis_context
+
+    return has_general_analysis_context or (has_analysis_context and 'como' in tokens and len(tokens) >= 3)
+
+
+def identify_salon(text):
+    normalized = normalize_text(text)
+    if not normalized:
         return None
 
-    query = Salon.query
-    if reference.isdigit():
-        salon = query.filter(Salon.id == int(reference)).first()
-    else:
-        salon = query.filter(db.func.lower(Salon.nombre).contains(reference.lower())).first()
+    tokens = normalized.split()
+    room_index = None
 
-    return salon
+    for index, token in enumerate(tokens):
+        if token in ROOM_KEYWORDS:
+            room_index = index
+            break
+
+    if room_index is None:
+        return None
+
+    reference_tokens = []
+    for token in tokens[room_index + 1:]:
+        if token in STOP_WORDS:
+            continue
+        reference_tokens.append(token)
+        if len(reference_tokens) >= 3:
+            break
+
+    if not reference_tokens:
+        return None
+
+    reference_phrase = ' '.join(reference_tokens)
+    candidate_references = []
+    if reference_phrase:
+        candidate_references.append(reference_phrase)
+    if room_index >= 0:
+        candidate_references.append(tokens[room_index] + ' ' + reference_phrase if reference_phrase else tokens[room_index])
+
+    for reference in candidate_references:
+        if not reference:
+            continue
+        if reference.isdigit():
+            salon = Salon.query.filter(Salon.id == int(reference)).first()
+            if salon:
+                return salon
+
+        normalized_reference = normalize_text(reference)
+        for salon in Salon.query.all():
+            normalized_name = normalize_text(salon.nombre)
+            if normalized_name == normalized_reference:
+                return salon
+            if normalized_reference in normalized_name.split():
+                return salon
+            if normalized_name in normalized_reference.split():
+                return salon
+
+    return None
 
 
 def _build_room_analysis_prompt(salon):
@@ -201,15 +257,6 @@ def _build_room_analysis_prompt(salon):
 
     return prompt
 
-
-def _is_room_analysis_request(text):
-    lower = text.lower()
-    has_analysis_keyword = any(keyword in lower for keyword in ANALYSIS_KEYWORDS)
-    has_room_keyword = any(keyword in lower for keyword in ['salón', 'salones', 'laboratorio', 'laboratorios'])
-    has_question_pattern = any(token in lower for token in ['analiza', 'análisis', 'estado', 'cómo', 'recomendaciones', 'recomendación', 'diagnóstico', 'reporte'])
-    return has_analysis_keyword and has_room_keyword and has_question_pattern
-
-
 @chat_ns.route('')
 class Chat(Resource):
 
@@ -227,17 +274,13 @@ class Chat(Resource):
                 "respuesta": "Lo siento, solo puedo responder preguntas relacionadas con el Sistema Inteligente de Iluminación Académica."
             }, 400
 
+        pregunta_normalizada = normalize_text(pregunta)
         pregunta_lower = pregunta.lower()
 
-        if _is_room_analysis_request(pregunta):
-            reference = _extract_salon_reference(pregunta)
-            salon = _find_salon_by_reference(reference) if reference else None
-
+        if detect_analysis_intent(pregunta):
+            salon = identify_salon(pregunta)
             if salon is None:
-                salon = Salon.query.filter(db.func.lower(Salon.nombre).contains('laboratorio')).first()
-
-            if salon is None:
-                return {"respuesta": "No existen suficientes datos registrados para generar un análisis confiable."}, 200
+                return {"respuesta": "No pude identificar el salón que deseas analizar. Por favor indica el nombre o número del salón."}, 200
 
             prompt = _build_room_analysis_prompt(salon)
             if not prompt:
@@ -270,8 +313,8 @@ class Chat(Resource):
                 return {"respuesta": f"Error interno: {str(e)}"}, 500
 
         permitido = any(
-            palabra in pregunta_lower
-            for palabra in PALABRAS_CLAVE
+            palabra in pregunta_normalizada
+            for palabra in NORMALIZED_PALABRAS_CLAVE
         )
 
         print("=" * 60)
