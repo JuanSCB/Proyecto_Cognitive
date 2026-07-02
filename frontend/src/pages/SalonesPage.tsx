@@ -18,7 +18,7 @@ const SalonesPage = () => {
   const [deleting, setDeleting] = useState<Salon | null>(null);
   const [activities, setActivities] = useState<Actividad[]>([]);
   const { user } = useAuth();
-  const canEdit = user?.rol === 'profesor';
+  const canEdit = user?.rol === 'administrador';
 
   const load = async () => {
     setLoading(true);

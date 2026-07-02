@@ -66,7 +66,7 @@ Servicios:
 
 ## Roles
 
-- `profesor` — permisos de creación/edición de salones y actividades
+- `administrador` — permisos de creación/edición de salones y actividades
 - `alumno` — permiso de solo lectura
 
 ## Flujo de autenticación

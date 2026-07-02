@@ -11,12 +11,12 @@ def require_role(required_role):
     Requiere que se envíe un token JWT en el header 'Authorization'.
     
     Roles soportados:
-    - 'profesor': acceso completo
+    - 'administrador': acceso completo
     - 'alumno': solo lectura
     
     Uso:
     @app.route('/salones', methods=['POST'])
-    @require_role('profesor')
+    @require_role('administrador')
     def crear_salon():
         ...
     """
@@ -47,17 +47,17 @@ def require_role(required_role):
                 user_role = payload.get('role')
                 
                 # Verificar que el rol es válido
-                if user_role not in ['profesor', 'alumno']:
+                if user_role not in ['administrador', 'alumno']:
                     return jsonify({
                         'error': 'Rol inválido',
                         'message': f'El rol "{user_role}" no es válido'
                     }), 403
                 
                 # Verificar que el usuario tiene el rol requerido
-                if required_role == 'profesor' and user_role != 'profesor':
+                if required_role == 'administrador' and user_role != 'administrador':
                     return jsonify({
                         'error': 'Acceso denegado',
-                        'message': 'Se requiere rol de profesor para esta operación'
+                        'message': 'Se requiere rol de administrador para esta operación'
                     }), 403
                 
                 # Pasar el ID y rol del usuario a la función
@@ -92,7 +92,7 @@ def create_token(user_id, role, expires_in_hours=24):
     
     Args:
         user_id: ID del usuario
-        role: Rol del usuario ('profesor' o 'alumno')
+        role: Rol del usuario ('administrador' o 'alumno')
         expires_in_hours: Horas hasta que expire el token
     
     Returns:

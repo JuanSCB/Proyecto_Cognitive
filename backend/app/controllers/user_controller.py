@@ -9,16 +9,16 @@ user_ns = Namespace('usuarios', description='Gestión de usuarios')
 @user_ns.route('')
 class UserList(Resource):
     @user_ns.marshal_list_with(user_model)
-    @require_role('profesor')
+    @require_role('administrador')
     def get(self, usuario_id=None, usuario_role=None):
-        """Obtener lista de usuarios (Solo profesor)"""
+        """Obtener lista de usuarios (Solo administrador)"""
         return UserService.list_users()
 
     @user_ns.expect(user_model, validate=True)
     @user_ns.marshal_with(user_model, code=201)
-    @require_role('profesor')
+    @require_role('administrador')
     def post(self, usuario_id=None, usuario_role=None):
-        """Crear nuevo usuario (Solo profesor)"""
+        """Crear nuevo usuario (Solo administrador)"""
         try:
             return UserService.create_user(user_ns.payload), 201
         except ValueError as error:
@@ -29,9 +29,9 @@ class UserList(Resource):
 @user_ns.param('id', 'ID del usuario')
 class UserItem(Resource):
     @user_ns.marshal_with(user_model)
-    @require_role('profesor')
+    @require_role('administrador')
     def get(self, id, usuario_id=None, usuario_role=None):
-        """Obtener detalles de usuario (Solo profesor)"""
+        """Obtener detalles de usuario (Solo administrador)"""
         user = UserService.get_user(id)
         if not user:
             abort(404, 'Usuario no encontrado')
@@ -39,9 +39,9 @@ class UserItem(Resource):
 
     @user_ns.expect(user_model, validate=True)
     @user_ns.marshal_with(user_model)
-    @require_role('profesor')
+    @require_role('administrador')
     def put(self, id, usuario_id=None, usuario_role=None):
-        """Actualizar usuario (Solo profesor)"""
+        """Actualizar usuario (Solo administrador)"""
         user = UserService.get_user(id)
         if not user:
             abort(404, 'Usuario no encontrado')
@@ -50,9 +50,9 @@ class UserItem(Resource):
         except ValueError as error:
             abort(400, str(error))
 
-    @require_role('profesor')
+    @require_role('administrador')
     def delete(self, id, usuario_id=None, usuario_role=None):
-        """Eliminar usuario (Solo profesor)"""
+        """Eliminar usuario (Solo administrador)"""
         user = UserService.get_user(id)
         if not user:
             abort(404, 'Usuario no encontrado')

@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 const initialMessages: Message[] = [
   {
     from: 'bot',
-    text: 'Hola, soy LumiBot.\n\nPuedo responder preguntas sobre:\n\n• ESP32\n\n• BH1750\n\n• Dashboard\n\n• Consumo energético\n\n• Salones\n\n• Roles Profesor y Alumno\n\n• Funcionamiento del sistema.'
+    text: 'Hola, soy LumiBot.\n\nPuedo responder preguntas sobre:\n\n• ESP32\n\n• BH1750\n\n• Dashboard\n\n• Consumo energético\n\n• Salones\n\n• Roles Administrador y Alumno\n\n• Funcionamiento del sistema.'
   }
 ];
 

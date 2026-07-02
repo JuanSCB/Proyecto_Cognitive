@@ -29,7 +29,7 @@ class SensorList(Resource):
     @sensor_ns.expect(sensor_input, validate=True)
     @sensor_ns.marshal_with(sensor_model, code=201)
     def post(self, usuario_id=None, usuario_role=None):
-        """Registrar lectura de sensor (Solo profesor)"""
+        """Registrar lectura de sensor (Solo administrador)"""
         payload = sensor_ns.payload
         sensor = SensorService.register_reading(payload)
         return sensor, 201

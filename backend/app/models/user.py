@@ -20,8 +20,8 @@ class Usuario(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def es_profesor(self):
-        return self.rol == 'profesor'
+    def es_administrador(self):
+        return self.rol == 'administrador'
 
     def es_alumno(self):
         return self.rol == 'alumno'

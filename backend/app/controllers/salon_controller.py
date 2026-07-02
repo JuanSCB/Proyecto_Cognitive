@@ -15,9 +15,9 @@ class SalonList(Resource):
 
     @salon_ns.expect(salon_input, validate=True)
     @salon_ns.marshal_with(salon_model, code=201)
-    @require_role('profesor')
+    @require_role('administrador')
     def post(self, usuario_id=None, usuario_role=None):
-        """Crear nuevo salón (Solo profesor)"""
+        """Crear nuevo salón (Solo administrador)"""
         payload = salon_ns.payload
         salon = SalonService.create_salon(payload)
         return salon, 201
@@ -32,15 +32,15 @@ class SalonDetail(Resource):
 
     @salon_ns.expect(salon_update_input, validate=False)
     @salon_ns.marshal_with(salon_model)
-    @require_role('profesor')
+    @require_role('administrador')
     def put(self, id, usuario_id=None, usuario_role=None):
-        """Actualizar salón (Solo profesor)"""
+        """Actualizar salón (Solo administrador)"""
         payload = salon_ns.payload
         return SalonService.update_salon(id, payload)
 
-    @require_role('profesor')
+    @require_role('administrador')
     def delete(self, id, usuario_id=None, usuario_role=None):
-        """Eliminar salón (Solo profesor)"""
+        """Eliminar salón (Solo administrador)"""
         return SalonService.delete_salon(id)
 
 

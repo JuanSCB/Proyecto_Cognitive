@@ -15,9 +15,9 @@ class ActivityList(Resource):
 
     @activity_ns.expect(activity_model, validate=True)
     @activity_ns.marshal_with(activity_model, code=201)
-    @require_role('profesor')
+    @require_role('administrador')
     def post(self, usuario_id=None, usuario_role=None):
-        """Crear nueva actividad (Solo profesor)"""
+        """Crear nueva actividad (Solo administrador)"""
         payload = activity_ns.payload
         try:
             activity = ActivityService.create_activity(payload)
@@ -39,9 +39,9 @@ class ActivityItem(Resource):
 
     @activity_ns.expect(activity_model, validate=True)
     @activity_ns.marshal_with(activity_model)
-    @require_role('profesor')
+    @require_role('administrador')
     def put(self, id, usuario_id=None, usuario_role=None):
-        """Actualizar actividad (Solo profesor)"""
+        """Actualizar actividad (Solo administrador)"""
         activity = ActivityService.get_activity(id)
         if not activity:
             abort(404, 'Actividad no encontrada')
@@ -50,9 +50,9 @@ class ActivityItem(Resource):
         except ValueError as error:
             abort(400, str(error))
 
-    @require_role('profesor')
+    @require_role('administrador')
     def delete(self, id, usuario_id=None, usuario_role=None):
-        """Eliminar actividad (Solo profesor)"""
+        """Eliminar actividad (Solo administrador)"""
         activity = ActivityService.get_activity(id)
         if not activity:
             abort(404, 'Actividad no encontrada')

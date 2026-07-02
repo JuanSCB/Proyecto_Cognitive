@@ -169,7 +169,7 @@ def test_salon_crud_and_salon_sensors(test_client):
 
 def test_chat_analysis_uses_real_room_data(test_client, monkeypatch):
     with test_client.application.app_context():
-        professor_token = create_token(user_id=1, role='profesor')
+        professor_token = create_token(user_id=1, role='administrador')
         activity_resp = test_client.post('/api/actividades', json={'nombre': 'Clase de laboratorio', 'descripcion': 'Prueba', 'lux_minimo': 100, 'lux_maximo': 300}, headers={'Authorization': f'Bearer {professor_token}'})
         assert activity_resp.status_code == 201
         actividad_id = activity_resp.get_json()['id']
@@ -215,7 +215,7 @@ def test_chat_analysis_uses_real_room_data(test_client, monkeypatch):
 
 def test_ai_analysis_endpoint_uses_real_room_data(test_client, monkeypatch):
     with test_client.application.app_context():
-        professor_token = create_token(user_id=1, role='profesor')
+        professor_token = create_token(user_id=1, role='administrador')
     activity_resp = test_client.post('/api/actividades', json={'nombre': 'Clase Teórica IA', 'descripcion': 'Análisis de prueba', 'lux_minimo': 100, 'lux_maximo': 200}, headers={'Authorization': f'Bearer {professor_token}'})
     assert activity_resp.status_code == 201
     actividad_id = activity_resp.get_json()['id']

@@ -72,7 +72,7 @@ class Register(Resource):
         'nombre': fields.String(required=True, description='Nombre completo'),
         'correo': fields.String(required=True, description='Correo del usuario'),
         'contraseña': fields.String(required=True, description='Contraseña'),
-        'rol': fields.String(required=False, default='alumno', description='Rol (profesor o alumno)')
+        'rol': fields.String(required=False, default='alumno', description='Rol (administrador o alumno)')
     })
     
     @auth_ns.expect(register_model, validate=True)
@@ -94,8 +94,8 @@ class Register(Resource):
         if len(contraseña) < 6:
             auth_ns.abort(400, 'La contraseña debe tener al menos 6 caracteres')
         
-        if rol not in ['profesor', 'alumno']:
-            auth_ns.abort(400, 'Rol inválido. Usar "profesor" o "alumno"')
+        if rol not in ['administrador', 'alumno']:
+            auth_ns.abort(400, 'Rol inválido. Usar "administrador" o "alumno"')
         
         # Verificar si el usuario ya existe
         if Usuario.query.filter_by(correo=correo).first():

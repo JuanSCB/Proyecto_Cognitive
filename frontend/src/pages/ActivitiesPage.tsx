@@ -14,7 +14,7 @@ const ActivitiesPage = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const canEdit = user?.rol === 'profesor';
+  const canEdit = user?.rol === 'administrador';
 
   useEffect(() => {
     const load = async () => {
@@ -152,7 +152,7 @@ const ActivitiesPage = () => {
           </form>
         ) : (
           <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
-            Solo los profesores pueden crear o editar actividades. Los alumnos pueden ver la lista.
+            Solo los administradores pueden crear o editar actividades. Los alumnos pueden ver la lista.
           </div>
         )}
       </Card>

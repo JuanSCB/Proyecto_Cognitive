@@ -2,7 +2,7 @@ export type AuthUser = {
   id: number;
   nombre: string;
   correo: string;
-  rol: 'profesor' | 'alumno' | string;
+  rol: 'administrador' | 'alumno' | string;
 };
 
 export type AuthPayload = {

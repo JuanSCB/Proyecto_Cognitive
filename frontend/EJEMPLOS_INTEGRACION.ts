@@ -12,7 +12,7 @@ interface Usuario {
   id: number;
   nombre: string;
   correo: string;
-  rol: 'profesor' | 'alumno';
+  rol: 'administrador' | 'alumno';
 }
 
 interface LoginResponse {
@@ -47,7 +47,7 @@ export const authService = {
     nombre: string,
     correo: string,
     contraseña: string,
-    rol: 'profesor' | 'alumno' = 'alumno'
+    rol: 'administrador' | 'alumno' = 'alumno'
   ): Promise<LoginResponse> {
     const response = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
@@ -83,10 +83,10 @@ export const authService = {
     return localStorage.getItem('token');
   },
 
-  // Verificar si el usuario es profesor
-  esProfesor(): boolean {
+  // Verificar si el usuario es administrador
+  esAdministrador(): boolean {
     const usuario = this.getUsuarioActual();
-    return usuario?.rol === 'profesor' ?? false;
+    return usuario?.rol === 'administrador' ?? false;
   },
 
   // Verificar si el usuario es alumno
@@ -161,8 +161,8 @@ export const LoginPage: React.FC = () => {
       const resultado = await authService.login(correo, contraseña);
       
       // Redirigir según el rol
-      if (resultado.usuario.rol === 'profesor') {
-        navigate('/dashboard-profesor');
+      if (resultado.usuario.rol === 'administrador') {
+        navigate('/dashboard-administrador');
       } else {
         navigate('/dashboard-alumno');
       }
@@ -214,7 +214,7 @@ import { authService } from '../services/authService';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'profesor' | 'alumno';
+  requiredRole?: 'administrador' | 'alumno';
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
@@ -239,7 +239,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 // <Route
 //   path="/crear-salon"
 //   element={
-//     <ProtectedRoute requiredRole="profesor">
+//     <ProtectedRoute requiredRole="administrador">
 //       <CrearSalonPage />
 //     </ProtectedRoute>
 //   }
@@ -260,7 +260,7 @@ export const salonService = {
     return response.data;
   },
 
-  // Crear salón (solo profesor)
+  // Crear salón (solo administrador)
   async crearSalon(nombre: string, ubicacion: string, descripcion?: string) {
     const response = await api.post('/salones', {
       nombre,
@@ -270,13 +270,13 @@ export const salonService = {
     return response.data;
   },
 
-  // Actualizar salón (solo profesor)
+  // Actualizar salón (solo administrador)
   async actualizarSalon(id: number, datos: any) {
     const response = await api.put(`/salones/${id}`, datos);
     return response.data;
   },
 
-  // Eliminar salón (solo profesor)
+  // Eliminar salón (solo administrador)
   async eliminarSalon(id: number) {
     const response = await api.delete(`/salones/${id}`);
     return response.data;
@@ -295,7 +295,7 @@ import { salonService } from '../services/salonService';
 
 export const SalonesPage: React.FC = () => {
   const [salones, setSalones] = useState<any[]>([]);
-  const esProfesor = authService.esProfesor();
+  const esAdministrador = authService.esAdministrador();
 
   useEffect(() => {
     cargarSalones();
@@ -311,8 +311,8 @@ export const SalonesPage: React.FC = () => {
   };
 
   const handleEliminar = async (id: number) => {
-    if (!esProfesor) {
-      alert('Solo profesores pueden eliminar salones');
+    if (!esAdministrador) {
+      alert('Solo administradores pueden eliminar salones');
       return;
     }
 
@@ -330,7 +330,7 @@ export const SalonesPage: React.FC = () => {
     <div className="salones-container">
       <h1>Salones</h1>
 
-      {esProfesor && (
+      {esAdministrador && (
         <button onClick={() => window.location.href = '/crear-salon'}>
           + Crear Nuevo Salón
         </button>
@@ -341,7 +341,7 @@ export const SalonesPage: React.FC = () => {
           <tr>
             <th>Nombre</th>
             <th>Ubicación</th>
-            {esProfesor && <th>Acciones</th>}
+            {esAdministrador && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -349,7 +349,7 @@ export const SalonesPage: React.FC = () => {
             <tr key={salon.id}>
               <td>{salon.nombre}</td>
               <td>{salon.ubicacion}</td>
-              {esProfesor && (
+              {esAdministrador && (
                 <td>
                   <button onClick={() => window.location.href = `/editar-salon/${salon.id}`}>
                     Editar
@@ -398,11 +398,11 @@ export const useAuth = () => {
     token,
     login,
     logout,
-    esProfesor: usuario?.rol === 'profesor',
+    esAdministrador: usuario?.rol === 'administrador',
     esAlumno: usuario?.rol === 'alumno',
     autenticado: !!token
   };
 };
 
 // Uso:
-// const { usuario, login, logout, esProfesor } = useAuth();
+// const { usuario, login, logout, esAdministrador } = useAuth();

@@ -17,7 +17,7 @@ const AppLayout = () => {
     { name: 'Consumo', path: '/consumo' }
   ];
 
-  if (user?.rol === 'profesor') {
+  if (user?.rol === 'administrador') {
     pages.push({ name: 'Configuración', path: '/configuracion' });
   }
 

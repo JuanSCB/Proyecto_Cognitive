@@ -48,7 +48,7 @@ PALABRAS_CLAVE = [
     'actividades',
     'consumo',
     'energia',
-    'profesor',
+    'administrador',
     'alumno',
     'configuracion',
     'ollama',
@@ -83,7 +83,7 @@ Tu conocimiento se limita exclusivamente a:
 - Salones
 - Actividades académicas
 - Consumo energético
-- Roles Profesor y Alumno
+- Roles Administrador y Alumno
 - Arquitectura del sistema
 - Comunicación ESP32 ↔ Flask ↔ MySQL ↔ React
 

@@ -15,9 +15,9 @@ class Configuration(Resource):
 
     @config_ns.expect(config_model, validate=True)
     @config_ns.marshal_with(config_model)
-    @require_role('profesor')
+    @require_role('administrador')
     def put(self, usuario_id=None, usuario_role=None):
-        """Actualizar configuración del sistema (Solo profesor)"""
+        """Actualizar configuración del sistema (Solo administrador)"""
         payload = config_ns.payload
         try:
             return ConfigService.update_configuration(ConfigService.get_configuration(), payload)

@@ -22,8 +22,8 @@ class UserService:
             raise ValueError('El rol es obligatorio.')
         
         # Validar rol
-        if payload.get('rol') not in ['profesor', 'alumno']:
-            raise ValueError('El rol debe ser "profesor" o "alumno".')
+        if payload.get('rol') not in ['administrador', 'alumno']:
+            raise ValueError('El rol debe ser "administrador" o "alumno".')
         
         return UserRepository.create(payload)
 
@@ -33,8 +33,8 @@ class UserService:
             raise ValueError('El nombre no puede estar vacío.')
         if 'correo' in payload and not payload['correo']:
             raise ValueError('El correo no puede estar vacío.')
-        if 'rol' in payload and payload['rol'] not in ['profesor', 'alumno']:
-            raise ValueError('El rol debe ser "profesor" o "alumno".')
+        if 'rol' in payload and payload['rol'] not in ['administrador', 'alumno']:
+            raise ValueError('El rol debe ser "administrador" o "alumno".')
         
         return UserRepository.update(user, payload)
 

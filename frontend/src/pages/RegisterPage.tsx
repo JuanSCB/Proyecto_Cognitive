@@ -6,7 +6,7 @@ const RegisterPage = () => {
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [contraseña, setContraseña] = useState('');
-  const [rol, setRol] = useState<'profesor' | 'alumno'>('alumno');
+  const [rol, setRol] = useState<'administrador' | 'alumno'>('alumno');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const RegisterPage = () => {
     <div className="mx-auto flex min-h-screen max-w-md items-center px-4 py-16">
       <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
         <h1 className="text-2xl font-semibold text-slate-900">Registrar usuario</h1>
-        <p className="mt-2 text-sm text-slate-600">Crea una cuenta de profesor o alumno para acceder al sistema.</p>
+        <p className="mt-2 text-sm text-slate-600">Crea una cuenta de administrador o alumno para acceder al sistema.</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           <label className="block text-sm font-medium text-slate-700">
@@ -70,11 +70,11 @@ const RegisterPage = () => {
             Rol
             <select
               value={rol}
-              onChange={event => setRol(event.target.value as 'profesor' | 'alumno')}
+              onChange={event => setRol(event.target.value as 'administrador' | 'alumno')}
               className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-500"
             >
               <option value="alumno">Alumno</option>
-              <option value="profesor">Profesor</option>
+              <option value="administrador">Administrador</option>
             </select>
           </label>
 

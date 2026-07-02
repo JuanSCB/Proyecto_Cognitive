@@ -8,7 +8,7 @@ import type { Configuracion } from '../types/api';
 
 const SettingsPage = () => {
   const { user } = useAuth();
-  const canEdit = user?.rol === 'profesor';
+  const canEdit = user?.rol === 'administrador';
   const configState = useFetch(getConfiguration, []);
   const [configuration, setConfiguration] = useState<Configuracion | null>(null);
   const [saving, setSaving] = useState(false);
@@ -24,7 +24,7 @@ const SettingsPage = () => {
       <div className="mx-auto flex min-h-screen items-center justify-center px-4 py-16">
         <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-8 shadow-soft text-center">
           <h1 className="text-2xl font-semibold text-slate-900">Acceso denegado</h1>
-          <p className="mt-4 text-sm text-slate-600">Solo los profesores pueden ver y editar la configuración del sistema.</p>
+          <p className="mt-4 text-sm text-slate-600">Solo los administradores pueden ver y editar la configuración del sistema.</p>
         </div>
       </div>
     );
