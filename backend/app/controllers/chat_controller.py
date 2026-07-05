@@ -1,15 +1,15 @@
 from flask_restx import Namespace, Resource, fields
 from flask import request
-import requests
 import os
+import requests
 import unicodedata
 from app import db
 from app.models.salon import Salon
 from app.models.sensor import Sensor
 from app.models.historial_iluminacion import HistorialIluminacion
 from app.models.consumo_energetico import ConsumoEnergetico
-from app.models.activity import Actividad
 from app.models.configuracion import Configuracion
+from app.utils.ai_utils import generate_ollama_response
 
 chat_ns = Namespace('chat', description='Chatbot especializado LumiBot')
 
@@ -90,6 +90,8 @@ Tu conocimiento se limita exclusivamente a:
 Responde de forma técnica, clara y breve.
 
 No inventes información.
+
+Responde sin formato Markdown. Evita encabezados, viñetas y símbolos como **, *, #.
 
 No respondas preguntas sobre deportes, política, historia, matemáticas, cultura general, entretenimiento o cualquier tema ajeno al proyecto.
 
@@ -275,7 +277,6 @@ class Chat(Resource):
             }, 400
 
         pregunta_normalizada = normalize_text(pregunta)
-        pregunta_lower = pregunta.lower()
 
         if detect_analysis_intent(pregunta):
             salon = identify_salon(pregunta)
@@ -287,19 +288,7 @@ class Chat(Resource):
                 return {"respuesta": "No existen suficientes datos registrados para generar un análisis confiable."}, 200
 
             try:
-                response = requests.post(
-                    f"{OLLAMA_URL}/api/generate",
-                    json={
-                        "model": OLLAMA_MODEL,
-                        "prompt": prompt,
-                        "stream": False,
-                        "system": "Eres un ingeniero experto en automatización, eficiencia energética, IoT y sistemas inteligentes de iluminación."
-                    },
-                    timeout=120
-                )
-                response.raise_for_status()
-                data = response.json()
-                respuesta = data.get("response", "").strip()
+                respuesta = generate_ollama_response(prompt)
                 if not respuesta:
                     respuesta = "No existen suficientes datos registrados para generar un análisis confiable."
                 return {"respuesta": respuesta}, 200
@@ -332,41 +321,13 @@ class Chat(Resource):
             print("URL:", OLLAMA_URL)
             print("Modelo:", OLLAMA_MODEL)
 
-            response = requests.post(
-                f"{OLLAMA_URL}/api/generate",
-                json={
-                    "model": OLLAMA_MODEL,
-                    "prompt": f"{SYSTEM_PROMPT}\n\nUsuario: {pregunta}\nLumiBot:",
-                    "stream": False
-                },
-                timeout=120
-            )
-
-            response.raise_for_status()
-
-            data = response.json()
-
-            respuesta = data.get("response", "").strip()
-
+            respuesta = generate_ollama_response(f"{SYSTEM_PROMPT}\n\nUsuario: {pregunta}\nLumiBot:")
             if not respuesta:
                 respuesta = "Lo siento, no pude generar una respuesta."
-
-            print("Respuesta generada correctamente.")
 
             return {
                 "respuesta": respuesta
             }, 200
-
-        except requests.exceptions.Timeout:
-            return {
-                "respuesta": "LumiBot tardó demasiado en responder."
-            }, 500
-
-        except requests.exceptions.ConnectionError:
-            return {
-                "respuesta": "No fue posible conectar con Ollama."
-            }, 500
-
         except Exception as e:
 
             import traceback

@@ -1,5 +1,4 @@
 from flask_restx import Namespace, Resource
-from flask import request
 from app.services.ai_service import AIService
 from app.decorators import require_role
 

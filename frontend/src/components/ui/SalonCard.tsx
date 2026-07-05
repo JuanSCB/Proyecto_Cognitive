@@ -45,6 +45,16 @@ const getAlertLevel = (nivel?: string | null, estado?: string | null) => {
   }
 };
 
+const sanitizeMarkdown = (text: string) => {
+  if (!text) return '';
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/(^|\n)[ \t]*[#*]+[ \t]*/g, '$1')
+    .replace(/[\*#]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+};
+
 const SalonCard: FC<Props> = ({ salon }) => {
   const navigate = useNavigate();
   const [analysis, setAnalysis] = useState<RoomAnalysisResponse | null>(null);
@@ -63,7 +73,10 @@ const SalonCard: FC<Props> = ({ salon }) => {
 
     try {
       const data = await analyzeRoom(salon.salon_id);
-      setAnalysis(data);
+      setAnalysis({
+        ...data,
+        analisis: sanitizeMarkdown(data.analisis)
+      });
     } catch (err: unknown) {
       const message = err && typeof err === 'object' && 'data' in err && err.data && typeof err.data === 'object' && 'message' in err.data
         ? String(err.data.message)

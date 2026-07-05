@@ -101,6 +101,8 @@ Mantén este archivo como la referencia principal.
 ## LumiBot
 
 LumiBot es el asistente integrado que responde preguntas **solo** relacionadas con el proyecto y está expuesto en `POST /api/chat`.
+Las respuestas de LumiBot se entregan en texto plano sin formato Markdown, eliminando `**`, `*` y `#`.
+Si la información disponible no es suficiente para responder con certeza, LumiBot debe indicarlo explícitamente y no inventar datos.
 
 ## Desarrollo local (frontend)
 

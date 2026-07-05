@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 
 const initialMessages: Message[] = [
   {
@@ -10,6 +10,16 @@ const initialMessages: Message[] = [
 type Message = {
   from: 'user' | 'bot';
   text: string;
+};
+
+const sanitizeMarkdown = (text: string) => {
+  if (!text) return '';
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/(^|\n)[ \t]*[#*]+[ \t]*/g, '$1')
+    .replace(/[\*#]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 };
 
 const ChatBot = () => {
@@ -45,7 +55,7 @@ const ChatBot = () => {
       }
 
       const data = await response.json();
-      const respuesta = data.respuesta || 'Lo siento, no pude generar una respuesta.';
+      const respuesta = sanitizeMarkdown(String(data.respuesta || 'Lo siento, no pude generar una respuesta.'));
 
       setMessages(prev => [...prev, { from: 'bot', text: respuesta }]);
     } catch (err) {

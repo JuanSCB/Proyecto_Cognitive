@@ -1,14 +1,10 @@
-import os
-import requests
 from app import db
 from app.models.salon import Salon
 from app.models.sensor import Sensor
 from app.models.historial_iluminacion import HistorialIluminacion
 from app.models.consumo_energetico import ConsumoEnergetico
 from app.repositories.salon_repository import SalonRepository
-
-OLLAMA_URL = os.getenv('OLLAMA_URL', 'http://ollama:11434')
-OLLAMA_MODEL = 'gemma3:1b'
+from app.utils.ai_utils import generate_ollama_response
 
 
 class AIService:
@@ -78,19 +74,8 @@ class AIService:
             "Siempre responde en español."
         )
 
-        response = requests.post(
-            f"{OLLAMA_URL}/api/generate",
-            json={
-                'model': OLLAMA_MODEL,
-                'prompt': prompt,
-                'stream': False
-            },
-            timeout=120
-        )
-        response.raise_for_status()
-
-        data = response.json()
-        analisis = data.get('response', '').strip() or 'No fue posible generar un análisis con los datos disponibles.'
+        analisis = generate_ollama_response(prompt)
+        analisis = analisis or 'No fue posible generar un análisis con los datos disponibles.'
 
         return {
             'salon': salon.nombre,
