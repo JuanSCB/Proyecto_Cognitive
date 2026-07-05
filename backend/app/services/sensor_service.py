@@ -1,6 +1,6 @@
 from datetime import date
 from app.repositories.sensor_repository import SensorRepository
-from app.repositories.config_repository import ConfigRepository
+from app.config_defaults import DEFAULT_UMBRAL_LUX, DEFAULT_INTENSIDAD_LED_DEFAULT
 from app.repositories.history_repository import HistoryRepository
 from app.repositories.activity_repository import ActivityRepository
 from app.repositories.salon_repository import SalonRepository
@@ -44,7 +44,9 @@ class SensorService:
         if not salon:
             raise NotFoundError('salon_id no existe.')
 
-        config = ConfigRepository.get_current()
+        # Use configured defaults (configuration CRUD removed)
+        config_umbral = DEFAULT_UMBRAL_LUX
+        config_intensidad_default = DEFAULT_INTENSIDAD_LED_DEFAULT
         data = {
             'lux': lux,
             'intensidad_led': intensidad_led,
@@ -54,8 +56,8 @@ class SensorService:
             'salon_id': salon_id,
         }
 
-        if payload.get('modo_automatico') and lux < config.umbral_lux:
-            data['intensidad_led'] = max(0, config.intensidad_led_default)
+        if payload.get('modo_automatico') and lux < config_umbral:
+            data['intensidad_led'] = max(0, config_intensidad_default)
 
         sensor = SensorRepository.create(data)
         SensorRepository.create_history(sensor)

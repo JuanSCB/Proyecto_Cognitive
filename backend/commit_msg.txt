@@ -1,1 +1,0 @@
-Refactor: remove legacy analyze-room endpoint; remove Analizar con IA UI; centralize IA in LumiBot; add salon filters; rebuild frontend; audit Configuracion

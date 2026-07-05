@@ -122,3 +122,38 @@ Si la información disponible no es suficiente para responder con certeza, LumiB
 
 ---
 Para detalles avanzados, ejemplo de variables y comandos específicos, revisa las secciones dentro de este README.
+
+## Decisiones de Diseño: Eliminación de `Configuración`
+
+Resumen
+-------
+Se eliminó la interfaz y el endpoint CRUD de `Configuración` de la primera versión pública porque
+los valores almacenados no son aplicados por los dispositivos ESP32 y generan confusión en los
+usuarios. Editar valores en el backend no afecta a los ESP32 en campo.
+
+Decisión
+--------
+- Quitar la página `Configuración` del frontend y el endpoint `/api/configuracion` del backend.
+- Reemplazar las lecturas dinámicas de la tabla `configuracion` por valores por defecto en tiempo
+	de ejecución que coinciden con la configuración del firmware ESP32.
+
+Valores por defecto utilizados
+-----------------------------
+- `umbral_lux`: 100
+- `intensidad_led_default`: 80
+- `pwm_alto` (intensidad máxima): 160
+- `max_consumo`: 100.0
+- `modo_automatico`: true
+
+Razonamiento
+-----------
+- El firmware del ESP32 no consulta ni aplica configuraciones almacenadas en la API.
+- Mantener una configuración centralizada en la UI daba una falsa sensación de control.
+- Usar constantes mantiene la coherencia entre backend y firmware y reduce la superficie de
+	mantenimiento. Si en el futuro el firmware soporta recibir configuración remota, la funcionalidad
+	puede restaurarse.
+
+Notas
+-----
+- Los archivos de migración y los SQL dumps que contienen la tabla `configuracion` se conservaron
+	como respaldo histórico.

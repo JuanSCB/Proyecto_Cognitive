@@ -56,13 +56,7 @@ dashboard_salon_model = api.model('DashboardSalon', {
     'modo_automatico': fields.Boolean(description='Último modo automático registrado')
 })
 
-config_model = api.model('Configuracion', {
-    'id': fields.Integer(readonly=True, description='ID de configuración'),
-    'modo_automatico': fields.Boolean(required=True, description='Modo automático habilitado'),
-    'intensidad_led_default': fields.Integer(required=True, description='Intensidad LED por defecto'),
-    'umbral_lux': fields.Integer(required=True, description='Umbral de luminosidad ambiental'),
-    'max_consumo': fields.Float(required=True, description='Máximo consumo energético permitido')
-})
+# Configuracion model removed; defaults are defined in app/config_defaults.py
 
 sensor_input = api.model('SensorInput', {
     'salon_id': fields.Integer(required=True, description='ID del salón asociado', example=1),

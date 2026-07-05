@@ -1,7 +1,6 @@
 from app import db
 from app.models.user import Usuario
 from app.models.activity import Actividad
-from app.models.configuracion import Configuracion
 from app.models.sensor import Sensor
 from app.models.salon import Salon
 from app.models.historial_iluminacion import HistorialIluminacion
@@ -11,7 +10,6 @@ __all__ = [
     'db',
     'Usuario',
     'Actividad',
-    'Configuracion',
     'Sensor',
     'Salon',
     'HistorialIluminacion',

@@ -137,62 +137,7 @@
         ]
       }
     },
-    "/api/configuracion": {
-      "get": {
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/Configuracion"
-            }
-          }
-        },
-        "operationId": "get_configuration",
-        "parameters": [
-          {
-            "name": "X-Fields",
-            "in": "header",
-            "type": "string",
-            "format": "mask",
-            "description": "An optional fields mask"
-          }
-        ],
-        "tags": [
-          "configuracion"
-        ]
-      },
-      "put": {
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/Configuracion"
-            }
-          }
-        },
-        "operationId": "put_configuration",
-        "parameters": [
-          {
-            "name": "payload",
-            "required": true,
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Configuracion"
-            }
-          },
-          {
-            "name": "X-Fields",
-            "in": "header",
-            "type": "string",
-            "format": "mask",
-            "description": "An optional fields mask"
-          }
-        ],
-        "tags": [
-          "configuracion"
-        ]
-      }
-    },
+    
     "/api/consumo": {
       "get": {
         "responses": {
@@ -1025,38 +970,7 @@
       },
       "type": "object"
     },
-    "Configuracion": {
-      "required": [
-        "intensidad_led_default",
-        "max_consumo",
-        "modo_automatico",
-        "umbral_lux"
-      ],
-      "properties": {
-        "id": {
-          "type": "integer",
-          "description": "ID de configuración",
-          "readOnly": true
-        },
-        "modo_automatico": {
-          "type": "boolean",
-          "description": "Modo automático habilitado"
-        },
-        "intensidad_led_default": {
-          "type": "integer",
-          "description": "Intensidad LED por defecto"
-        },
-        "umbral_lux": {
-          "type": "integer",
-          "description": "Umbral de luminosidad ambiental"
-        },
-        "max_consumo": {
-          "type": "number",
-          "description": "Máximo consumo energético permitido"
-        }
-      },
-      "type": "object"
-    },
+    
     "Usuario": {
       "required": [
         "correo",

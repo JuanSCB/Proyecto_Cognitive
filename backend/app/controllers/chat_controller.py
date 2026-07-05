@@ -1,16 +1,10 @@
 from flask_restx import Namespace, Resource, fields
 from flask import request
-import os
 import requests
 import unicodedata
-from app import db
 from app.models.salon import Salon
-from app.models.sensor import Sensor
-from app.models.historial_iluminacion import HistorialIluminacion
-from app.models.consumo_energetico import ConsumoEnergetico
-from app.models.configuracion import Configuracion
 from app.services.ai_service import AIService
-from app.utils.ai_utils import generate_ollama_response
+from app.utils.ai_utils import generate_ollama_response, OLLAMA_URL, OLLAMA_MODEL
 
 chat_ns = Namespace('chat', description='Chatbot especializado LumiBot')
 
@@ -22,13 +16,6 @@ response_model = chat_ns.model('ChatResponse', {
     'respuesta': fields.String(description='Respuesta del chatbot')
 })
 
-# URL de Ollama obtenida desde Docker Compose
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434")
-
-# Modelo a utilizar
-OLLAMA_MODEL = "gemma3:1b"
-# Si más adelante utilizas Mistral, simplemente cambia por:
-# OLLAMA_MODEL = "mistral"
 
 PALABRAS_CLAVE = [
     'esp32',
@@ -60,48 +47,6 @@ PALABRAS_CLAVE = [
     'backend',
     'frontend'
 ]
-
-SYSTEM_PROMPT = """
-Eres LumiBot.
-
-Asistente virtual del proyecto
-"Sistema Inteligente de Iluminación Académica".
-
-Tu conocimiento se limita exclusivamente a:
-
-- ESP32 DevKit V1
-- Sensor BH1750
-- Lux
-- PWM
-- Flask
-- React
-- Docker
-- AWS EC2
-- MySQL
-- JWT
-- Ollama
-- Dashboard de monitoreo
-- Salones
-- Actividades académicas
-- Consumo energético
-- Roles Administrador y Alumno
-- Arquitectura del sistema
-- Comunicación ESP32 ↔ Flask ↔ MySQL ↔ React
-
-Responde de forma técnica, clara y breve.
-
-No inventes información.
-
-Responde sin formato Markdown. Evita encabezados, viñetas y símbolos como **, *, #.
-
-No respondas preguntas sobre deportes, política, historia, matemáticas, cultura general, entretenimiento o cualquier tema ajeno al proyecto.
-
-Si la pregunta está fuera del dominio permitido responde exactamente:
-
-Lo siento, solo puedo responder preguntas relacionadas con el Sistema Inteligente de Iluminación Académica.
-
-Limita las respuestas a máximo cinco líneas.
-"""
 
 ANALYSIS_KEYWORDS = {
     'analiza', 'analizar', 'analisis', 'estado', 'como', 'estuvo', 'reporte', 'diagnostico',
@@ -197,69 +142,6 @@ def identify_salon(text):
     return None
 
 
-def _build_room_analysis_prompt(salon):
-    latest_sensor = (
-        Sensor.query.filter_by(salon_id=salon.id)
-        .order_by(Sensor.registrado_en.desc())
-        .first()
-    )
-
-    history_entries = (
-        db.session.query(HistorialIluminacion)
-        .join(Sensor)
-        .filter(Sensor.salon_id == salon.id)
-        .order_by(HistorialIluminacion.registrado_en.desc())
-        .limit(5)
-        .all()
-    )
-
-    consumo_entry = (
-        db.session.query(ConsumoEnergetico)
-        .join(Sensor)
-        .filter(Sensor.salon_id == salon.id)
-        .order_by(ConsumoEnergetico.creado_en.desc())
-        .first()
-    )
-
-    configuracion = Configuracion.query.order_by(Configuracion.creado_en.desc()).first()
-    actividad_actual = salon.actividad.nombre if salon.actividad else None
-
-    lux_actual = latest_sensor.lux if latest_sensor else None
-    lux_promedio = round(sum(item.lux for item in history_entries) / len(history_entries), 2) if history_entries else None
-    intensidad = latest_sensor.intensidad_led if latest_sensor else None
-    consumo = consumo_entry.total_kwh if consumo_entry else (latest_sensor.consumo_energetico if latest_sensor else None)
-    modo = 'automático' if latest_sensor and latest_sensor.modo_automatico else 'manual' if latest_sensor else 'No disponible'
-    fecha = latest_sensor.registrado_en.strftime('%Y-%m-%d %H:%M:%S') if latest_sensor and latest_sensor.registrado_en else None
-
-    if not history_entries and not latest_sensor:
-        return None
-
-    prompt = (
-        "Eres un ingeniero especialista en automatización industrial y eficiencia energética.\n"
-        "Analiza el siguiente salón del sistema LumiSense.\n\n"
-        f"Nombre del salón: {salon.nombre or 'No disponible'}\n"
-        f"Actividad: {actividad_actual or 'No disponible'}\n"
-        f"Modo: {modo}\n"
-        f"Lux actual: {lux_actual if lux_actual is not None else 'No disponible'}\n"
-        f"Lux promedio: {lux_promedio if lux_promedio is not None else 'No disponible'}\n"
-        f"Consumo energético: {consumo if consumo is not None else 'No disponible'}\n"
-        f"PWM LED: {intensidad if intensidad is not None else 'No disponible'}\n"
-        f"Fecha: {fecha or 'No disponible'}\n"
-        f"Configuración recomendada: {configuracion.umbral_lux if configuracion else 'No disponible'}\n\n"
-        "Genera:\n"
-        "1. Estado general del salón.\n"
-        "2. Diagnóstico técnico.\n"
-        "3. Posibles problemas.\n"
-        "4. Recomendaciones para optimizar iluminación y consumo energético.\n"
-        "5. Conclusión.\n"
-        "No inventes información.\n"
-        "Si los datos no permiten llegar a una conclusión indícalo.\n"
-        "Responder siempre en español.\n"
-        "Máximo seis líneas."
-    )
-
-    return prompt
-
 @chat_ns.route('')
 class Chat(Resource):
 
@@ -319,7 +201,7 @@ class Chat(Resource):
             print("URL:", OLLAMA_URL)
             print("Modelo:", OLLAMA_MODEL)
 
-            respuesta = generate_ollama_response(f"{SYSTEM_PROMPT}\n\nUsuario: {pregunta}\nLumiBot:")
+            respuesta = generate_ollama_response(pregunta)
             if not respuesta:
                 respuesta = "Lo siento, no pude generar una respuesta."
 
