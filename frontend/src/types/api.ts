@@ -29,13 +29,6 @@ export interface Actividad {
   descripcion?: string;
 }
 
-export interface Configuracion {
-  id?: number;
-  modo_automatico: boolean;
-  intensidad_led_default: number;
-  umbral_lux: number;
-  max_consumo: number;
-}
 
 export interface Usuario {
   id?: number;

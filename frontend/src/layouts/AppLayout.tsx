@@ -17,9 +17,7 @@ const AppLayout = () => {
     { name: 'Consumo', path: '/consumo' }
   ];
 
-  if (user?.rol === 'administrador') {
-    pages.push({ name: 'Configuración', path: '/configuracion' });
-  }
+  // Configuration menu removed
 
   useEffect(() => {
     if (!user) {

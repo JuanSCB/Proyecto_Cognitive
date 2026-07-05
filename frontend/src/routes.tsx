@@ -6,7 +6,6 @@ import HistoryPage from './pages/HistoryPage';
 import ActivitiesPage from './pages/ActivitiesPage';
 import MetricsPage from './pages/MetricsPage';
 import ConsumptionPage from './pages/ConsumptionPage';
-import SettingsPage from './pages/SettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import SalonDetailsPage from './pages/SalonDetailsPage';
 import SalonHistoryPage from './pages/SalonHistoryPage';
@@ -34,7 +33,7 @@ const AppRoutes = () => (
       <Route path="actividades" element={<ActivitiesPage />} />
       <Route path="reportes" element={<MetricsPage />} />
       <Route path="consumo" element={<ConsumptionPage />} />
-      <Route path="configuracion" element={<SettingsPage />} />
+      {/* Configuration route removed */}
       <Route path="salones/:id" element={<SalonDetailsPage />} />
       <Route path="salones/:id/historial" element={<SalonHistoryPage />} />
       <Route path="salones" element={<SalonesPage />} />
