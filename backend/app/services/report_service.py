@@ -6,9 +6,9 @@ from app.utils.exceptions import BadRequestError, NotFoundError
 
 class ReportService:
     @staticmethod
-    def get_report():
-        historial = HistoryRepository.list_all()
-        ultimo = SensorRepository.get_latest()
+    def get_report(salon_id=None):
+        historial = HistoryRepository.query_range(salon_id=salon_id)
+        ultimo = SensorRepository.get_latest_by_salon(salon_id) if salon_id else SensorRepository.get_latest()
         energia_total = sum(item.consumo_energetico for item in historial)
 
         return {
@@ -18,27 +18,27 @@ class ReportService:
         }
 
     @staticmethod
-    def get_history(start_date=None, end_date=None):
-        return HistoryRepository.query_range(start_date, end_date)
+    def get_history(start_date=None, end_date=None, salon_id=None):
+        return HistoryRepository.query_range(start_date, end_date, salon_id)
 
     @staticmethod
-    def get_average_lux():
-        historial = HistoryRepository.list_all()
+    def get_average_lux(salon_id=None):
+        historial = HistoryRepository.query_range(salon_id=salon_id)
         if not historial:
             return {'promedio_lux': 0.0, 'cantidad_registros': 0}
         promedio = sum(item.lux for item in historial) / len(historial)
         return {'promedio_lux': round(promedio, 2), 'cantidad_registros': len(historial)}
 
     @staticmethod
-    def get_total_consumption():
-        historial = HistoryRepository.list_all()
+    def get_total_consumption(salon_id=None):
+        historial = HistoryRepository.query_range(salon_id=salon_id)
         total = sum(item.consumo_energetico for item in historial)
         return {'total_consumo': round(total, 2)}
 
     @staticmethod
-    def get_statistics():
-        historial = HistoryRepository.list_all()
-        ultimo = SensorRepository.get_latest()
+    def get_statistics(salon_id=None):
+        historial = HistoryRepository.query_range(salon_id=salon_id)
+        ultimo = SensorRepository.get_latest_by_salon(salon_id) if salon_id else SensorRepository.get_latest()
         cantidad = len(historial)
         if cantidad == 0:
             return {

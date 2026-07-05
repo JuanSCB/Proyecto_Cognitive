@@ -19,8 +19,10 @@ class HistoryRepository:
         )
 
     @staticmethod
-    def query_range(start_date=None, end_date=None):
+    def query_range(start_date=None, end_date=None, salon_id=None):
         query = HistorialIluminacion.query
+        if salon_id is not None:
+            query = query.join(Sensor).filter(Sensor.salon_id == salon_id)
         if start_date:
             query = query.filter(HistorialIluminacion.registrado_en >= start_date)
         if end_date:

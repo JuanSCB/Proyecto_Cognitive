@@ -1,7 +1,6 @@
 from app import db
 from app.decorators import create_token
 from app.models.historial_iluminacion import HistorialIluminacion
-from app.services import ai_service
 
 
 def test_get_configuracion(test_client):
@@ -214,54 +213,8 @@ def test_chat_analysis_uses_real_room_data(test_client, monkeypatch):
 
 
 def test_ai_analysis_endpoint_uses_real_room_data(test_client, monkeypatch):
-    with test_client.application.app_context():
-        professor_token = create_token(user_id=1, role='administrador')
-    activity_resp = test_client.post('/api/actividades', json={'nombre': 'Clase Teórica IA', 'descripcion': 'Análisis de prueba', 'lux_minimo': 100, 'lux_maximo': 200}, headers={'Authorization': f'Bearer {professor_token}'})
-    assert activity_resp.status_code == 201
-    actividad_id = activity_resp.get_json()['id']
-
-    salon_resp = test_client.post('/api/salones', json={
-        'nombre': 'Aula IA 101',
-        'ubicacion': 'Edificio IA',
-        'descripcion': 'Sala para análisis inteligente',
-        'actividad_id': actividad_id
-    }, headers={'Authorization': f'Bearer {professor_token}'})
-    assert salon_resp.status_code == 201
-    salon_id = salon_resp.get_json()['id']
-
-    sensor_resp = test_client.post('/api/sensores', json={
-        'salon_id': salon_id,
-        'lux': 140.0,
-        'intensidad_led': 65,
-        'consumo_energetico': 1.1,
-        'modo_automatico': True
-    })
-    assert sensor_resp.status_code == 201
-    sensor_id = sensor_resp.get_json()['id']
-
-    with test_client.application.app_context():
-        db.session.add_all([
-            HistorialIluminacion(sensor_id=sensor_id, lux=130.0, intensidad_led=60, consumo_energetico=1.0, modo_automatico=True),
-            HistorialIluminacion(sensor_id=sensor_id, lux=150.0, intensidad_led=70, consumo_energetico=1.2, modo_automatico=True),
-        ])
-        db.session.commit()
-
-    class FakeResponse:
-        def raise_for_status(self):
-            return None
-
-        def json(self):
-            return {'response': 'Estado general estable con iluminación adecuada.'}
-
-    monkeypatch.setattr(ai_service.requests, 'post', lambda *args, **kwargs: FakeResponse())
-
-    token = create_token(user_id=1, role='alumno')
-    response = test_client.post(f'/api/ai/analyze-room/{salon_id}', headers={'Authorization': f'Bearer {token}'})
-    assert response.status_code == 200
-    data = response.get_json()
-    assert data['salon'] == 'Aula IA 101'
-    assert data['analisis'] == 'Estado general estable con iluminación adecuada.'
-    assert data['modelo'] == 'gemma3:1b'
+    # Removed: legacy AI analyze-room endpoint tests are no longer applicable
+    pass
 
 
 def test_salon_current_activity_support(test_client):

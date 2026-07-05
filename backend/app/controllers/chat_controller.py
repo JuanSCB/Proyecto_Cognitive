@@ -9,6 +9,7 @@ from app.models.sensor import Sensor
 from app.models.historial_iluminacion import HistorialIluminacion
 from app.models.consumo_energetico import ConsumoEnergetico
 from app.models.configuracion import Configuracion
+from app.services.ai_service import AIService
 from app.utils.ai_utils import generate_ollama_response
 
 chat_ns = Namespace('chat', description='Chatbot especializado LumiBot')
@@ -283,12 +284,9 @@ class Chat(Resource):
             if salon is None:
                 return {"respuesta": "No pude identificar el salón que deseas analizar. Por favor indica el nombre o número del salón."}, 200
 
-            prompt = _build_room_analysis_prompt(salon)
-            if not prompt:
-                return {"respuesta": "No existen suficientes datos registrados para generar un análisis confiable."}, 200
-
             try:
-                respuesta = generate_ollama_response(prompt)
+                room_analysis = AIService.analyze_room(salon.id)
+                respuesta = room_analysis.get('analisis') if isinstance(room_analysis, dict) else None
                 if not respuesta:
                     respuesta = "No existen suficientes datos registrados para generar un análisis confiable."
                 return {"respuesta": respuesta}, 200

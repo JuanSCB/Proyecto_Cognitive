@@ -16,9 +16,10 @@ class Historial(Resource):
         try:
             start_date = self.parse_date(request.args.get('start_date'))
             end_date = self.parse_date(request.args.get('end_date'))
+            salon_id = request.args.get('salon_id', type=int)
         except ValueError as error:
             abort(400, str(error))
-        return ReportService.get_history(start_date, end_date)
+        return ReportService.get_history(start_date, end_date, salon_id)
 
     @staticmethod
     def parse_date(value):

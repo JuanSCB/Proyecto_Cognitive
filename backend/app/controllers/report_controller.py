@@ -1,3 +1,4 @@
+from flask import request
 from flask_restx import Namespace, Resource
 from app.schemas.swagger_models import (
     report_model,
@@ -16,7 +17,8 @@ report_ns = Namespace('reportes', description='Reportes e historial de iluminaci
 class Report(Resource):
     @report_ns.marshal_with(report_model)
     def get(self):
-        report_data = ReportService.get_report()
+        salon_id = request.args.get('salon_id', type=int)
+        report_data = ReportService.get_report(salon_id)
         if report_data['ultimo_registro'] is None:
             return {**report_data, 'ultimo_registro': {}}, 200
         return report_data
@@ -26,28 +28,32 @@ class Report(Resource):
 class History(Resource):
     @report_ns.marshal_list_with(sensor_model)
     def get(self):
-        return ReportService.get_history()
+        salon_id = request.args.get('salon_id', type=int)
+        return ReportService.get_history(None, None, salon_id)
 
 
 @report_ns.route('/promedio-lux')
 class AverageLux(Resource):
     @report_ns.marshal_with(average_lux_model)
     def get(self):
-        return ReportService.get_average_lux()
+        salon_id = request.args.get('salon_id', type=int)
+        return ReportService.get_average_lux(salon_id)
 
 
 @report_ns.route('/consumo-total')
 class TotalConsumption(Resource):
     @report_ns.marshal_with(total_consumo_model)
     def get(self):
-        return ReportService.get_total_consumption()
+        salon_id = request.args.get('salon_id', type=int)
+        return ReportService.get_total_consumption(salon_id)
 
 
 @report_ns.route('/estadisticas')
 class Statistics(Resource):
     @report_ns.marshal_with(statistics_model)
     def get(self):
-        return ReportService.get_statistics()
+        salon_id = request.args.get('salon_id', type=int)
+        return ReportService.get_statistics(salon_id)
 
 
 @report_ns.route('/cumplimiento-iluminacion/<int:salon_id>')
