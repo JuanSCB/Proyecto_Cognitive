@@ -1,3 +1,4 @@
+import traceback
 from flask import jsonify
 from werkzeug.exceptions import HTTPException
 from sqlalchemy.exc import IntegrityError
@@ -24,4 +25,5 @@ def register_error_handlers(app):
     @app.errorhandler(Exception)
     def handle_exception(error):
         status_code = getattr(error, 'code', 500)
+        traceback.print_exc()
         return jsonify({'error': True, 'message': str(error)}), status_code

@@ -4,7 +4,7 @@ from app.models.sensor import Sensor
 from app.models.historial_iluminacion import HistorialIluminacion
 from app.models.consumo_energetico import ConsumoEnergetico
 from app.repositories.salon_repository import SalonRepository
-from app.utils.ai_utils import generate_ollama_response
+from app.utils.ai_utils import generate_ollama_response, OLLAMA_MODEL
 
 
 class AIService:
