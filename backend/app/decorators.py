@@ -23,24 +23,26 @@ def require_role(required_role):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+            print('===== REQUIRE_ROLE =====')
+            print('METHOD:', request.method)
+            print('PATH:', request.path)
             # Obtener el token del header Authorization (aceptar variantes)
             auth_header = request.headers.get('Authorization') or request.headers.get('authorization')
+            print('Authorization:', auth_header)
+            print('SECRET_KEY:', current_app.config['SECRET_KEY'])
 
             # Soporte adicional: cabecera alternativa o query param/cookie (fallbacks)
             if not auth_header:
                 auth_header = request.headers.get('X-Access-Token') or request.args.get('token') or request.cookies.get('token')
 
             if not auth_header:
-                current_app.logger.debug('Autenticación fallida: no se encontró header Authorization para %s %s', request.method, request.path)
-                return jsonify({
-                    'error': 'No autorizado',
-                    'message': 'Se requiere token de autenticación'
-                }), 401
+                raise Exception('No Authorization header present')
             
             try:
                 # Esperar formato "Bearer <token>" o simplemente el token
                 parts = auth_header.split(' ')
                 token = parts[1] if len(parts) > 1 else parts[0]
+                print('TOKEN:', token)
                 
                 # Decodificar el token
                 payload = jwt.decode(
@@ -48,47 +50,30 @@ def require_role(required_role):
                     current_app.config.get('SECRET_KEY', 'dev-secret-key'),
                     algorithms=['HS256']
                 )
+                print('PAYLOAD:', payload)
                 
                 user_id = payload.get('user_id')
                 user_role = payload.get('role')
+                print('ROLE:', user_role)
+                print('ENTRANDO AL ENDPOINT')
                 
                 # Verificar que el rol es válido
                 if user_role not in ['administrador', 'alumno']:
-                    return jsonify({
-                        'error': 'Rol inválido',
-                        'message': f'El rol "{user_role}" no es válido'
-                    }), 403
+                    raise Exception(f'El rol "{user_role}" no es válido')
                 
                 # Verificar que el usuario tiene el rol requerido
                 if required_role == 'administrador' and user_role != 'administrador':
-                    return jsonify({
-                        'error': 'Acceso denegado',
-                        'message': 'Se requiere rol de administrador para esta operación'
-                    }), 403
+                    raise Exception('Se requiere rol de administrador para esta operación')
                 
                 # Pasar el ID y rol del usuario a la función
                 kwargs['usuario_id'] = user_id
                 kwargs['usuario_role'] = user_role
                 
                 return f(*args, **kwargs)
-            
-            except jwt.ExpiredSignatureError:
-                return jsonify({
-                    'error': 'Token expirado',
-                    'message': 'El token de autenticación ha expirado'
-                }), 401
-            except jwt.InvalidTokenError:
-                current_app.logger.debug('Autenticación fallida: token inválido para %s %s', request.method, request.path)
-                return jsonify({
-                    'error': 'Token inválido',
-                    'message': 'El token de autenticación es inválido'
-                }), 401
             except Exception as e:
-                current_app.logger.exception('Error autenticando petición %s %s: %s', request.method, request.path, e)
-                return jsonify({
-                    'error': 'Error de autenticación',
-                    'message': str(e)
-                }), 401
+                import traceback
+                traceback.print_exc()
+                raise
         
         return decorated_function
     return decorator
