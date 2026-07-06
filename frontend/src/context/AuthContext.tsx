@@ -35,6 +35,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { token, user } = auth;
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const stored = parseStoredAuth();
+    if (!stored || !stored.token || !stored.user) {
+      setAuth({ token: null, user: null });
+    }
+  }, []);
+
+  useEffect(() => {
     if (token && user) {
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token, user }));
     } else {

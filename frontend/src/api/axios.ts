@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const AUTH_STORAGE_KEY = 'iluminacion-auth';
+const SESSION_EXPIRED_KEY = 'iluminacion-session-expired';
 
 const getStoredToken = () => {
   if (typeof window === 'undefined') return null;
@@ -12,6 +13,11 @@ const getStoredToken = () => {
   } catch {
     return null;
   }
+};
+
+const clearStoredAuth = () => {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(AUTH_STORAGE_KEY);
 };
 
 const api = axios.create({
@@ -45,7 +51,26 @@ api.interceptors.request.use(config => {
 
 api.interceptors.response.use(
   response => response,
-  error => Promise.reject(error?.response || error)
+  error => {
+    const response = error?.response;
+    if (response && response.status === 401) {
+      const message = response.data?.message ?? response.data?.error ?? '';
+      const normalized = String(message).toLowerCase();
+      if (
+        normalized.includes('token expirado') ||
+        normalized.includes('el token de autenticación ha expirado') ||
+        normalized.includes('token inválido') ||
+        normalized.includes('el token de autenticación es inválido')
+      ) {
+        clearStoredAuth();
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(SESSION_EXPIRED_KEY, 'true');
+          window.location.href = '/login';
+        }
+      }
+    }
+    return Promise.reject(error?.response || error);
+  }
 );
 
 export default api;

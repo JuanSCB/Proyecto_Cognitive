@@ -33,6 +33,13 @@ const LoginPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem('iluminacion-session-expired') === 'true') {
+      localStorage.removeItem('iluminacion-session-expired');
+      setError('Tu sesión ha expirado. Por favor inicia sesión nuevamente.');
+    }
+  }, []);
+
   return (
     <div className="mx-auto flex min-h-screen max-w-md items-center px-4 py-16">
       <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
