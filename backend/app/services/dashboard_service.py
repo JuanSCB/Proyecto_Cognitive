@@ -16,9 +16,7 @@ class DashboardService:
             latest = SensorRepository.get_latest_by_salon(salon.id)
 
             lux_value = latest.lux if latest else None
-            lux_minimo = salon.actividad.lux_minimo if salon.actividad else None
-            lux_maximo = salon.actividad.lux_maximo if salon.actividad else None
-            lighting = classify_lux_reading(lux_value, lux_minimo, lux_maximo)
+            lighting = classify_lux_reading(lux_value)
 
             dashboard.append({
                 'salon_id': salon.id,
@@ -29,8 +27,8 @@ class DashboardService:
 
                 'lux': lux_value,
 
-                'lux_minimo': lux_minimo,
-                'lux_maximo': lux_maximo,
+                'lux_minimo': salon.actividad.lux_minimo if salon.actividad else None,
+                'lux_maximo': salon.actividad.lux_maximo if salon.actividad else None,
 
                 'estado_iluminacion': lighting['estado_iluminacion'],
                 'nivel_alerta': lighting['nivel_alerta'],

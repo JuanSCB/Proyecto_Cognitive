@@ -1,12 +1,12 @@
 # Proyecto_Cognitive
 
-Este repositorio contiene el frontend y backend del sistema inteligente de iluminación.
+Este repositorio contiene el frontend y backend del sistema inteligente de iluminación académico.
 
 ## Dockerización
 
-Se agregaron los archivos necesarios para ejecutar la aplicación con Docker:
+Se agregaron los archivos necesarios para ejecutar la aplicación con Docker.
 
-# Sistema Inteligente de Iluminación Académica
+## Descripción
 
 Este repositorio contiene el backend (Flask), frontend (React + Vite) y la infraestructura Docker para el proyecto "Sistema Inteligente de Iluminación Académica".
 
@@ -61,6 +61,8 @@ Servicios:
 - `GET /api/dashboard/salones` — Obtener información de salones (estado, nivel_alerta, lux)
 - `GET /api/salones/:id` — Detalle del salón
 - `GET /api/salones/:id/sensores` — Lecturas / historial (historial completo)
+- `POST /api/salones` — Crear salón; `actividad_id` es opcional y puede ser `null`
+- `PUT /api/salones/:id` — Actualizar salón; `actividad_id` puede establecerse en `null` para quitar la actividad
 - `GET /api/reportes/cumplimiento-iluminacion/:id` — Porcentaje de cumplimiento histórico
 - `POST /api/chat` — LumiBot (proxy a Ollama con filtro)
 
@@ -76,21 +78,21 @@ Servicios:
 ## Configuración ESP32 y BH1750
 
 - El ESP32 lee BH1750 y envía `lux`, `intensidad_led`, `consumo_energetico`, `modo_automatico` al endpoint del Flask encargado de sensores.
-- Clasificación del ESP32 (y ahora consistente en backend):
+- La lógica de clasificación en backend ahora es consistente con la lógica del firmware ESP32 y no depende de los umbrales `lux_minimo`/`lux_maximo` de la actividad.
 
 ```
 if lux <= 100:
-	estado = "Ambiente oscuro"
+	estado = "Iluminación insuficiente"
 elif lux <= 6000:
-	estado = "Ambiente con iluminación media"
+	estado = "Iluminación adecuada"
 else:
-	estado = "Ambiente muy iluminado"
+	estado = "Iluminación excesiva"
 ```
 
 Intensidad LED en modo automático:
-- Ambiente oscuro → `intensidadLED = 160`
-- Ambiente con iluminación media → `intensidadLED = 80`
-- Ambiente muy iluminado → `intensidadLED = 0`
+- Iluminación insuficiente → `intensidadLED = 160`
+- Iluminación adecuada → `intensidadLED = 80`
+- Iluminación excesiva → `intensidadLED = 0`
 
 ## Documentación y archivos Markdown
 

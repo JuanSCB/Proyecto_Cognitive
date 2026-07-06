@@ -78,15 +78,12 @@ class ReportService:
                 'porcentaje_excesivo': 0,
             }
 
-        lux_minimo = salon.actividad.lux_minimo if salon.actividad else None
-        lux_maximo = salon.actividad.lux_maximo if salon.actividad else None
-
         insuficiente = 0
         adecuado = 0
         excesivo = 0
 
         for item in historial:
-            classification = classify_lux_reading(item.lux, lux_minimo, lux_maximo)
+            classification = classify_lux_reading(item.lux)
             if classification['categoria'] == 'insuficiente':
                 insuficiente += 1
             elif classification['categoria'] == 'adecuado':
