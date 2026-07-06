@@ -2,6 +2,7 @@ from app.repositories.history_repository import HistoryRepository
 from app.repositories.sensor_repository import SensorRepository
 from app.repositories.salon_repository import SalonRepository
 from app.utils.exceptions import BadRequestError, NotFoundError
+from app.utils.lighting import classify_lux_reading
 
 
 class ReportService:
@@ -77,9 +78,21 @@ class ReportService:
                 'porcentaje_excesivo': 0,
             }
 
-        insuficiente = sum(1 for item in historial if item.lux <= 100)
-        adecuado = sum(1 for item in historial if item.lux <= 6000 and item.lux > 100)
-        excesivo = sum(1 for item in historial if item.lux > 6000)
+        lux_minimo = salon.actividad.lux_minimo if salon.actividad else None
+        lux_maximo = salon.actividad.lux_maximo if salon.actividad else None
+
+        insuficiente = 0
+        adecuado = 0
+        excesivo = 0
+
+        for item in historial:
+            classification = classify_lux_reading(item.lux, lux_minimo, lux_maximo)
+            if classification['categoria'] == 'insuficiente':
+                insuficiente += 1
+            elif classification['categoria'] == 'adecuado':
+                adecuado += 1
+            elif classification['categoria'] == 'excesivo':
+                excesivo += 1
 
         porcentaje_insuficiente = round(insuficiente / total * 100)
         porcentaje_exceso = round(excesivo / total * 100)

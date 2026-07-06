@@ -17,6 +17,26 @@ class ActivityService:
         if not nombre:
             raise BadRequestError('El nombre de la actividad es requerido.')
 
+        lux_minimo = payload.get('lux_minimo')
+        lux_maximo = payload.get('lux_maximo')
+
+        if lux_minimo is None:
+            lux_minimo = 100
+        if lux_maximo is None:
+            lux_maximo = 6000
+
+        try:
+            lux_minimo = int(lux_minimo)
+            lux_maximo = int(lux_maximo)
+        except (TypeError, ValueError):
+            raise BadRequestError('lux_minimo y lux_maximo deben ser valores numéricos válidos.')
+
+        if lux_minimo < 0:
+            raise BadRequestError('lux_minimo debe ser mayor o igual a 0.')
+
+        if lux_maximo <= lux_minimo:
+            raise BadRequestError('lux_maximo debe ser mayor que lux_minimo.')
+
         existing = ActivityRepository.get_by_name(nombre)
         if existing:
             raise ConflictError('Ya existe una actividad con ese nombre.')
@@ -24,8 +44,8 @@ class ActivityService:
         return ActivityRepository.create({
             'nombre': nombre,
             'descripcion': payload.get('descripcion'),
-            'lux_minimo': payload.get('lux_minimo'),
-            'lux_maximo': payload.get('lux_maximo')
+            'lux_minimo': lux_minimo,
+            'lux_maximo': lux_maximo,
         })
 
     @staticmethod

@@ -27,6 +27,8 @@ export interface Actividad {
   id?: number;
   nombre: string;
   descripcion?: string;
+  lux_minimo?: number | null;
+  lux_maximo?: number | null;
 }
 
 

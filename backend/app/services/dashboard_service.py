@@ -1,5 +1,6 @@
 from app.repositories.salon_repository import SalonRepository
 from app.repositories.sensor_repository import SensorRepository
+from app.utils.lighting import classify_lux_reading
 
 
 class DashboardService:
@@ -17,33 +18,9 @@ class DashboardService:
             lux_value = latest.lux if latest else None
             lux_minimo = salon.actividad.lux_minimo if salon.actividad else None
             lux_maximo = salon.actividad.lux_maximo if salon.actividad else None
-
-            # =====================================================
-            # Clasificación de iluminación (igual que el ESP32)
-            # =====================================================
-
-            if lux_value is None:
-
-                estado_iluminacion = 'Sin datos'
-                nivel_alerta = 'rojo'
-
-            elif lux_value <= 100:
-
-                estado_iluminacion = 'Ambiente oscuro'
-                nivel_alerta = 'rojo'
-
-            elif lux_value <= 6000:
-
-                estado_iluminacion = 'Ambiente con iluminación media'
-                nivel_alerta = 'amarillo'
-
-            else:
-
-                estado_iluminacion = 'Ambiente muy iluminado'
-                nivel_alerta = 'verde'
+            lighting = classify_lux_reading(lux_value, lux_minimo, lux_maximo)
 
             dashboard.append({
-
                 'salon_id': salon.id,
                 'nombre': salon.nombre,
 
@@ -55,13 +32,12 @@ class DashboardService:
                 'lux_minimo': lux_minimo,
                 'lux_maximo': lux_maximo,
 
-                'estado_iluminacion': estado_iluminacion,
-                'nivel_alerta': nivel_alerta,
+                'estado_iluminacion': lighting['estado_iluminacion'],
+                'nivel_alerta': lighting['nivel_alerta'],
 
                 'intensidad_led': latest.intensidad_led if latest else None,
                 'consumo_energetico': latest.consumo_energetico if latest else None,
                 'modo_automatico': latest.modo_automatico if latest else None,
-
             })
 
         return dashboard

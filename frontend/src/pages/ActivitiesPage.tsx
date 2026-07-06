@@ -6,13 +6,19 @@ import { useAuth } from '../context/AuthContext';
 import { createActivity, deleteActivity, getActivities, updateActivity } from '../services/activitiesService';
 import type { Actividad } from '../types/api';
 
-const initialForm: Actividad = { nombre: '', descripcion: '' };
+type ActivityForm = Actividad & {
+  lux_minimo: number | string;
+  lux_maximo: number | string;
+};
+
+const initialForm: ActivityForm = { nombre: '', descripcion: '', lux_minimo: 100, lux_maximo: 6000 };
 
 const ActivitiesPage = () => {
   const [activities, setActivities] = useState<Actividad[]>([]);
-  const [form, setForm] = useState<Actividad>(initialForm);
+  const [form, setForm] = useState<ActivityForm>(initialForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [formError, setFormError] = useState<string | null>(null);
   const { user } = useAuth();
   const canEdit = user?.rol === 'administrador';
 
@@ -39,18 +45,55 @@ const ActivitiesPage = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!form.nombre.trim()) return;
+    setFormError(null);
+
+    if (!form.nombre.trim()) {
+      setFormError('El nombre de la actividad es obligatorio.');
+      return;
+    }
+
+    if (form.lux_minimo === '' || form.lux_maximo === '') {
+      setFormError('Lux mínimo y Lux máximo son obligatorios.');
+      return;
+    }
+
+    const lux_minimo = Number(form.lux_minimo);
+    const lux_maximo = Number(form.lux_maximo);
+
+    if (Number.isNaN(lux_minimo) || Number.isNaN(lux_maximo)) {
+      setFormError('Lux mínimo y Lux máximo deben ser valores numéricos válidos.');
+      return;
+    }
+
+    if (lux_minimo < 0) {
+      setFormError('Lux mínimo debe ser mayor o igual a 0.');
+      return;
+    }
+
+    if (lux_maximo <= lux_minimo) {
+      setFormError('Lux máximo debe ser mayor que Lux mínimo.');
+      return;
+    }
 
     setLoading(true);
     try {
-      if (editingId) {
-        await updateActivity(editingId, form);
+      const payload = {
+        ...form,
+        lux_minimo,
+        lux_maximo,
+      };
+
+      if (editingId !== null) {
+        await updateActivity(editingId, payload);
       } else {
-        await createActivity(form);
+        await createActivity(payload);
       }
       setForm(initialForm);
       setEditingId(null);
+      setFormError(null);
       await refresh();
+    } catch (error: any) {
+      setFormError(error?.message ?? 'Error al guardar la actividad.');
     } finally {
       setLoading(false);
     }
@@ -80,7 +123,12 @@ const ActivitiesPage = () => {
                   type="button"
                   onClick={() => {
                     setEditingId(activity.id ?? null);
-                    setForm({ nombre: activity.nombre, descripcion: activity.descripcion });
+                    setForm({
+                      nombre: activity.nombre,
+                      descripcion: activity.descripcion,
+                      lux_minimo: activity.lux_minimo ?? 100,
+                      lux_maximo: activity.lux_maximo ?? 6000,
+                    });
                   }}
                   className="rounded-2xl bg-slate-100 px-3 py-2 hover:bg-slate-200"
                 >
@@ -132,22 +180,54 @@ const ActivitiesPage = () => {
                 placeholder="Detalle de la actividad"
               />
             </label>
-            <div className="flex items-end gap-3 sm:col-span-2">
-              <button className="rounded-3xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-                {editingId ? 'Actualizar actividad' : 'Crear actividad'}
-              </button>
-              {editingId ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingId(null);
-                    setForm(initialForm);
-                  }}
-                  className="rounded-3xl border border-slate-300 bg-white px-5 py-3 text-sm text-slate-700 hover:bg-slate-100"
-                >
-                  Cancelar
-                </button>
+            <label className="space-y-2 text-sm text-slate-600">
+              Lux mínimo
+              <input
+                type="number"
+                min={0}
+                step={1}
+                value={form.lux_minimo}
+                onChange={event => setForm(prev => ({ ...prev, lux_minimo: event.target.value === '' ? '' : Number(event.target.value) }))}
+                className="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-500"
+                required
+              />
+            </label>
+            <label className="space-y-2 text-sm text-slate-600">
+              Lux máximo
+              <input
+                type="number"
+                min={0}
+                step={1}
+                value={form.lux_maximo}
+                onChange={event => setForm(prev => ({ ...prev, lux_maximo: event.target.value === '' ? '' : Number(event.target.value) }))}
+                className="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-500"
+                required
+              />
+            </label>
+            <div className="flex flex-col gap-3 sm:col-span-2">
+              {formError ? (
+                <div className="rounded-3xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+                  {formError}
+                </div>
               ) : null}
+              <div className="flex items-end gap-3">
+                <button className="rounded-3xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                  {editingId ? 'Actualizar actividad' : 'Crear actividad'}
+                </button>
+                {editingId ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingId(null);
+                      setForm(initialForm);
+                      setFormError(null);
+                    }}
+                    className="rounded-3xl border border-slate-300 bg-white px-5 py-3 text-sm text-slate-700 hover:bg-slate-100"
+                  >
+                    Cancelar
+                  </button>
+                ) : null}
+              </div>
             </div>
           </form>
         ) : (
