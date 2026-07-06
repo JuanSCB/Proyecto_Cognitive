@@ -36,22 +36,28 @@ class SalonService:
 
     @staticmethod
     def update_salon(salon_id, payload):
+        print('--- SalonService.update_salon ---')
+        print('Payload:', payload)
         salon = SalonRepository.get_by_id(salon_id)
+        print('Salón encontrado:', salon)
         if not salon:
             raise NotFoundError('Salón no encontrado.')
 
         actividad_id = payload['actividad_id'] if 'actividad_id' in payload else salon.actividad_id
+        print('Actividad recibida:', payload.get('actividad_id'))
         if actividad_id is not None:
             actividad = ActivityRepository.get_by_id(actividad_id)
             if not actividad:
                 raise NotFoundError('actividad_id no existe.')
 
-        return SalonRepository.update(salon, {
+        salon = SalonRepository.update(salon, {
             'nombre': payload.get('nombre', salon.nombre),
             'ubicacion': payload.get('ubicacion', salon.ubicacion),
             'descripcion': payload.get('descripcion', salon.descripcion),
             'actividad_id': actividad_id,
         })
+        print('Retornando:', salon)
+        return salon
 
     @staticmethod
     def delete_salon(salon_id):
