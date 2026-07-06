@@ -23,18 +23,24 @@ def require_role(required_role):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            # Obtener el token del header Authorization
-            auth_header = request.headers.get('Authorization', '')
-            
+            # Obtener el token del header Authorization (aceptar variantes)
+            auth_header = request.headers.get('Authorization') or request.headers.get('authorization')
+
+            # Soporte adicional: cabecera alternativa o query param/cookie (fallbacks)
             if not auth_header:
+                auth_header = request.headers.get('X-Access-Token') or request.args.get('token') or request.cookies.get('token')
+
+            if not auth_header:
+                current_app.logger.debug('Autenticación fallida: no se encontró header Authorization para %s %s', request.method, request.path)
                 return jsonify({
                     'error': 'No autorizado',
                     'message': 'Se requiere token de autenticación'
                 }), 401
             
             try:
-                # Esperar formato "Bearer <token>"
-                token = auth_header.split(' ')[1] if ' ' in auth_header else auth_header
+                # Esperar formato "Bearer <token>" o simplemente el token
+                parts = auth_header.split(' ')
+                token = parts[1] if len(parts) > 1 else parts[0]
                 
                 # Decodificar el token
                 payload = jwt.decode(
@@ -72,11 +78,13 @@ def require_role(required_role):
                     'message': 'El token de autenticación ha expirado'
                 }), 401
             except jwt.InvalidTokenError:
+                current_app.logger.debug('Autenticación fallida: token inválido para %s %s', request.method, request.path)
                 return jsonify({
                     'error': 'Token inválido',
                     'message': 'El token de autenticación es inválido'
                 }), 401
             except Exception as e:
+                current_app.logger.exception('Error autenticando petición %s %s: %s', request.method, request.path, e)
                 return jsonify({
                     'error': 'Error de autenticación',
                     'message': str(e)

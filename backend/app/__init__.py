@@ -31,7 +31,14 @@ def create_app(test_config=None):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # Permitir explícitamente la cabecera Authorization en CORS para evitar
+    # que navegadores/proxies la eliminen en peticiones con preflight (PUT/DELETE)
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": "*"}},
+        expose_headers=['Authorization'],
+        allow_headers=['Content-Type', 'Authorization']
+    )
 
     from app.routes import register_routes
     register_routes(api)

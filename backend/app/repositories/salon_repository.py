@@ -13,6 +13,10 @@ class SalonRepository:
         return Salon.query.options(joinedload(Salon.actividad)).order_by(Salon.nombre).all()
 
     @staticmethod
+    def list_all_with_activity_ordered_by_id():
+        return Salon.query.options(joinedload(Salon.actividad)).order_by(Salon.id).all()
+
+    @staticmethod
     def get_by_id(salon_id):
         return db.session.get(Salon, salon_id, options=[joinedload(Salon.actividad)])
 

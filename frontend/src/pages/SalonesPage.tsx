@@ -59,6 +59,10 @@ const SalonesPage = () => {
   const handleUpdate = async (payload: Partial<Salon>) => {
     if (!editing) return;
     try {
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.debug('[SalonesPage] about to call updateSalon', { id: editing.id, payload });
+      }
       await updateSalon(editing.id, payload);
       setEditing(null);
       await load();

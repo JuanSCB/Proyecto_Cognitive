@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource
+from flask import request, current_app
 from app.schemas.swagger_models import salon_input, salon_update_input, salon_model, sensor_model
 from app.services.salon_service import SalonService
 from app.decorators import require_role
@@ -35,6 +36,15 @@ class SalonDetail(Resource):
     @require_role('administrador')
     def put(self, id, usuario_id=None, usuario_role=None):
         """Actualizar salón (Solo administrador)"""
+        # Diagnostic: print headers to confirm Authorization arrived at backend
+        try:
+            # print raw headers for quick diagnostics (temporary)
+            print('--- PUT /api/salones/{id} headers ---')
+            print(request.headers)
+            current_app.logger.debug('PUT /api/salones/%s headers: %s', id, dict(request.headers))
+        except Exception:
+            pass
+
         payload = salon_ns.payload
         return SalonService.update_salon(id, payload)
 

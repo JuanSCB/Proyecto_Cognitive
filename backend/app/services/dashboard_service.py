@@ -5,7 +5,9 @@ from app.repositories.sensor_repository import SensorRepository
 class DashboardService:
     @staticmethod
     def get_latest_by_salon():
-        salones = SalonRepository.list_all_with_activity()
+        # Usar orden por ID para que el dashboard muestre salones
+        # en el mismo orden fijo que usa el ESP32 (por salon_id numérico)
+        salones = SalonRepository.list_all_with_activity_ordered_by_id()
         dashboard = []
 
         for salon in salones:
