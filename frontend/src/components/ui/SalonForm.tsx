@@ -6,9 +6,10 @@ interface Props {
   activities?: Actividad[];
   onCancel: () => void;
   onSave: (payload: Partial<Salon>) => Promise<void> | void;
+  requireActivitySelection?: boolean;
 }
 
-const SalonForm: FC<Props> = ({ initial = {}, activities = [], onCancel, onSave }) => {
+const SalonForm: FC<Props> = ({ initial = {}, activities = [], onCancel, onSave, requireActivitySelection = false }) => {
   const [nombre, setNombre] = useState(initial.nombre ?? '');
   const [ubicacion, setUbicacion] = useState(initial.ubicacion ?? '');
   const [descripcion, setDescripcion] = useState(initial.descripcion ?? '');
@@ -22,6 +23,7 @@ const SalonForm: FC<Props> = ({ initial = {}, activities = [], onCancel, onSave 
     setError('');
     if (!nombre.trim()) return setError('El nombre es obligatorio');
     if (!ubicacion.trim()) return setError('La ubicación es obligatoria');
+    if (requireActivitySelection && actividadId === '') return setError('Debe seleccionar una actividad.');
 
     const payload: Partial<Salon> = {
       nombre: nombre.trim(),
@@ -67,7 +69,9 @@ const SalonForm: FC<Props> = ({ initial = {}, activities = [], onCancel, onSave 
           onChange={e => setActividadId(e.target.value)}
           className="mt-1 w-full rounded-md border px-3 py-2"
         >
-          <option value="">Sin actividad</option>
+          <option value="" disabled={requireActivitySelection}>
+          {requireActivitySelection ? 'Seleccione una actividad' : 'Sin actividad'}
+        </option>
           {activities.map(activity => (
             <option key={activity.id} value={activity.id}>
               {activity.nombre}

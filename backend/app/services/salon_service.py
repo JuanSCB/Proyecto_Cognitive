@@ -22,10 +22,12 @@ class SalonService:
             raise BadRequestError('El campo nombre es obligatorio.')
 
         actividad_id = payload.get('actividad_id')
-        if actividad_id is not None:
-            actividad = ActivityRepository.get_by_id(actividad_id)
-            if not actividad:
-                raise NotFoundError('actividad_id no existe.')
+        if actividad_id is None:
+            raise BadRequestError('Debe seleccionar una actividad para crear el salón.')
+
+        actividad = ActivityRepository.get_by_id(actividad_id)
+        if not actividad:
+            raise NotFoundError('actividad_id no existe.')
 
         return SalonRepository.create({
             'nombre': payload.get('nombre'),
