@@ -27,7 +27,7 @@ const SalonForm: FC<Props> = ({ initial = {}, activities = [], onCancel, onSave 
       nombre: nombre.trim(),
       ubicacion: ubicacion.trim(),
       descripcion: descripcion.trim(),
-      actividad_id: actividadId ? Number(actividadId) : null
+      ...(actividadId !== '' ? { actividad_id: Number(actividadId) } : {})
     };
 
     await onSave(payload);
